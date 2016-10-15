@@ -14,8 +14,9 @@ import javafx.scene.paint.Paint;
 
 public class ControllerButton extends Button{
 
-    private static final Background hoveredBackground = new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY));
-    private static final Background selectedBackground = new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY));
+    private static final CornerRadii cornerRadii = new CornerRadii(7);
+    private static final Background hoveredBackground = new Background(new BackgroundFill(Color.WHITE, cornerRadii, Insets.EMPTY));
+    private static final Background selectedBackground = new Background(new BackgroundFill(Color.WHITE, cornerRadii, Insets.EMPTY));
     private static final Background defaultBackground = new Background(new BackgroundFill(Color.TRANSPARENT, CornerRadii.EMPTY, Insets.EMPTY));
     private static final Paint hoveredTextFill = Color.DARKGRAY;
     private static final Paint defaultTextFill = Color.WHITE;

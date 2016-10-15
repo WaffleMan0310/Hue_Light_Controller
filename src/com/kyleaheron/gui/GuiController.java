@@ -4,8 +4,6 @@ import com.kyleaheron.HueBridge;
 import com.kyleaheron.gui.components.ControllerButton;
 import com.kyleaheron.gui.components.ControllerSlider;
 import com.kyleaheron.lights.LightController;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.image.Image;
@@ -25,6 +23,14 @@ public class GuiController implements Initializable{
     private HueBridge bridge;
     private LightController currentLightController;
 
+    @FXML
+    private BorderPane topPane;
+    @FXML
+    private BorderPane bottomPane;
+    @FXML
+    private Pane leftPane;
+    @FXML
+    private Pane rightPane;
     @FXML
     private BorderPane mainPane;
     @FXML
@@ -90,7 +96,7 @@ public class GuiController implements Initializable{
     }
 
     private void createEffectControlPanel(LightController.Effect effect) {
-        //assert effectControlPane != null;
+        assert effectControlPane != null;
         effectControlPane.getChildren().clear();
         switch (effect) {
             case STATIC:

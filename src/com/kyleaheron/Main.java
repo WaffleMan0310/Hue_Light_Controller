@@ -12,6 +12,7 @@ TODO: Review all previous code, including the api, and replace ifs with assertio
 TODO: Finish making all of the settings control panels.
 TODO: Make api do a more concise check on the username.json, not just if its present.
 TODO: Make the application settings panel.
+TODO: Skins? Make use of.
  */
 
 public class Main extends Application  {

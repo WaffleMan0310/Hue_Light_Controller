@@ -19,7 +19,7 @@
             </Rectangle>
             <VBox fx:id="lightButtonPane" prefHeight="200.0" prefWidth="300.0">
                <padding>
-                  <Insets left="15.0" />
+                  <Insets left="15.0" right="15.0" />
                </padding></VBox>
             <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="350.0" layoutX="560.0" layoutY="10.0" stroke="WHITE" strokeType="INSIDE" width="10.0">
                <effect>
@@ -28,7 +28,7 @@
             </Rectangle>
             <VBox fx:id="effectButtonPane" layoutX="10.0" layoutY="10.0" prefHeight="200.0" prefWidth="300.0">
                <padding>
-                  <Insets left="15.0" />
+                  <Insets left="15.0" right="15.0" />
                </padding>
             </VBox>
             <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="350.0" layoutX="840.0" layoutY="10.0" stroke="WHITE" strokeType="INSIDE" width="10.0">
@@ -38,7 +38,7 @@
             </Rectangle>
             <VBox fx:id="effectControlPane" layoutX="310.0" layoutY="10.0" prefHeight="200.0" prefWidth="300.0">
                <padding>
-                  <Insets left="15.0" />
+                  <Insets left="15.0" right="15.0" />
                </padding>
             </VBox>
             <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="350.0" layoutX="10.0" layoutY="10.0" stroke="WHITE" strokeType="INSIDE" width="10.0">
@@ -50,15 +50,15 @@
       </HBox>
    </center>
    <top>
-      <BorderPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+      <BorderPane fx:id="topPane" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
    </top>
    <bottom>
-      <BorderPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+      <BorderPane fx:id="bottomPane" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
    </bottom>
    <left>
-      <Pane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+      <Pane fx:id="leftPane" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
    </left>
    <right>
-      <Pane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+      <Pane fx:id="rightPane" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
    </right>
 </BorderPane>

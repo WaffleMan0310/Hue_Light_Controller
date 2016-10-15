@@ -101,7 +101,7 @@ public class GuiController implements Initializable{
         switch (effect) {
             case STATIC:
                 ControllerSlider stBriSlider = new ControllerSlider("Brightness", 1d, 254d, getCurrentLightController().getStaticBrightness(), (observableVal, prevNum, num) -> {
-                    if (prevNum != num) {
+                    if (!prevNum.equals(num)) {
                         getCurrentLightController().setStaticBrightness(num.intValue());
                     }
                 });

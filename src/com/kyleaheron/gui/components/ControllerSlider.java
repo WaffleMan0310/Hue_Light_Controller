@@ -1,15 +1,20 @@
 package com.kyleaheron.gui.components;
 
-import javafx.event.EventHandler;
+import javafx.beans.value.ChangeListener;
+import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 
 public class ControllerSlider extends Slider{
 
-    public ControllerSlider(String name, double min, double max, double value, EventHandler handler) {
+    private Slider slider;
+    private Label name;
+    private Label value;
+
+    public ControllerSlider(String name, double min, double max, double value, ChangeListener<Number> listener) {
         setMin(min);
         setMax(max);
         setValue(value);
-        setOnDragDetected(handler);
+        valueProperty().addListener(listener);
         setVisible(true);
 
     }

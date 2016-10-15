@@ -4,6 +4,8 @@ import com.kyleaheron.HueBridge;
 import com.kyleaheron.gui.components.ControllerButton;
 import com.kyleaheron.gui.components.ControllerSlider;
 import com.kyleaheron.lights.LightController;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.image.Image;
@@ -92,10 +94,10 @@ public class GuiController implements Initializable{
         effectControlPane.getChildren().clear();
         switch (effect) {
             case STATIC:
-                ControllerSlider stBriSlider = new ControllerSlider("Brightness", 1d, 254d, getCurrentLightController().getStaticBrightness(), e -> {
-                    ControllerSlider source = (ControllerSlider) e.getSource();
-                    System.out.println(source.getValue());
-                    getCurrentLightController().setStaticBrightness((int)source.getValue());
+                ControllerSlider stBriSlider = new ControllerSlider("Brightness", 1d, 254d, getCurrentLightController().getStaticBrightness(), (observableVal, prevNum, num) -> {
+                    if (prevNum != num) {
+                        getCurrentLightController().setStaticBrightness(num.intValue());
+                    }
                 });
                 effectControlPane.getChildren().add(stBriSlider);
                 break;

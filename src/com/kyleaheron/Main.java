@@ -7,6 +7,13 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+/*
+TODO: Review all previous code, including the api, and replace ifs with assertions if applicable.
+TODO: Finish making all of the settings control panels.
+TODO: Make api do a more concise check on the username.json, not just if its present.
+TODO: Make the application settings panel.
+ */
+
 public class Main extends Application  {
 
     public static void main (String[] args) {

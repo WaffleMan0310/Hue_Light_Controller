@@ -1,6 +1,10 @@
 package com.kyleaheron.gui.components;
 
 import com.kyleaheron.gui.GuiController;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
@@ -14,6 +18,10 @@ import javafx.scene.paint.Paint;
 
 public class ControllerButton extends Button{
 
+    public enum State {
+        DEFAULT, HOVERED, SELECTED
+    }
+
     private static final CornerRadii cornerRadii = new CornerRadii(7);
     private static final Background hoveredBackground = new Background(new BackgroundFill(Color.WHITE, cornerRadii, Insets.EMPTY));
     private static final Background selectedBackground = new Background(new BackgroundFill(Color.WHITE, cornerRadii, Insets.EMPTY));
@@ -22,22 +30,38 @@ public class ControllerButton extends Button{
     private static final Paint defaultTextFill = Color.WHITE;
     private static final DropShadow shadow = new DropShadow();
 
-    private Object target;
-
-    private boolean selected;
+    private SimpleObjectProperty<Object> target;
+    private SimpleObjectProperty<State> state;
 
     public ControllerButton(Object target, String text, EventHandler handler) {
-        this.setTarget(target);
+        this.target = new SimpleObjectProperty<>(target);
+        this.state = new SimpleObjectProperty<>(State.DEFAULT);
+        this.state.addListener((observable, oldValue, newValue) -> {
+            if (newValue != oldValue) {
+                switch (newValue) {
+                    case SELECTED:
+                        setTextFill(hoveredTextFill);
+                        setBackground(selectedBackground);
+                        break;
+                    case HOVERED:
+                        setTextFill(hoveredTextFill);
+                        setBackground(hoveredBackground);
+                        break;
+                    default:
+                        setTextFill(defaultTextFill);
+                        setBackground(defaultBackground);
+                        break;
+                }
+            }
+        });
         addEventHandler(MouseEvent.MOUSE_ENTERED, e -> {
-            if (!isSelected()) {
-                setTextFill(hoveredTextFill);
-                setBackground(hoveredBackground);
+            if (getState() != State.SELECTED) {
+                setState(State.HOVERED);
             }
         });
         addEventHandler(MouseEvent.MOUSE_EXITED, e -> {
-            if (!isSelected()) {
-                setTextFill(defaultTextFill);
-                setBackground(defaultBackground);
+            if (getState() != State.SELECTED) {
+                setState(State.DEFAULT);
             }
         });
         addEventHandler(MouseEvent.MOUSE_RELEASED, handler);
@@ -49,27 +73,19 @@ public class ControllerButton extends Button{
         setVisible(true);
     }
 
-    public Object getTarget() {
-        return target;
-    }
-
     public void setTarget(Object target) {
-        this.target = target;
+        this.target.set(target);
     }
 
-    public boolean isSelected() {
-        return selected;
+    public Object getTarget() {
+        return this.target.get();
     }
 
-    public void setSelected(boolean selected) {
-        if (selected) {
-            setTextFill(hoveredTextFill);
-            setBackground(selectedBackground);
-        } else {
-            setEffect(null);
-            setTextFill(defaultTextFill);
-            setBackground(defaultBackground);
-        }
-        this.selected = selected;
+    public void setState(State state) {
+        this.state.set(state);
+    }
+
+    public State getState() {
+        return this.state.get();
     }
 }

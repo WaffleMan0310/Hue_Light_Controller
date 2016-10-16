@@ -1,6 +1,7 @@
 package com.kyleaheron.gui.components;
 
 import com.kyleaheron.gui.GuiController;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
@@ -14,25 +15,33 @@ public class ControllerSlider extends VBox {
     private static final Insets padding = new Insets(5, 0, 5, 0);
     private static final DropShadow shadow = new DropShadow();
 
-    private Slider slider;
-    private Label name;
+    private SimpleObjectProperty<Slider> slider;
+    private SimpleObjectProperty<Label> name;
 
     public ControllerSlider(String name, double min, double max, double value, ChangeListener<Number> listener) {
-        this.slider = new Slider(min, max, value);
-        this.name = new Label(name);
+        this.slider = new SimpleObjectProperty<>(new Slider(min, max, value));
+        this.name = new SimpleObjectProperty<>(new Label(name));
 
-        this.name.setFont(GuiController.font);
-        this.name.setEffect(shadow);
-        this.name.setTextFill(Color.WHITE);
-        this.name.setLabelFor(this.slider);
+        getNameLabel().setFont(GuiController.font);
+        getNameLabel().setEffect(shadow);
+        getNameLabel().setTextFill(Color.WHITE);
+        getNameLabel().setLabelFor(getSlider());
 
-        this.slider.setEffect(shadow);
-        this.slider.setPadding(padding);
-        this.slider.valueProperty().addListener(listener);
+        getSlider().setEffect(shadow);
+        getSlider().setPadding(padding);
+        getSlider().valueProperty().addListener(listener);
 
         setPadding(padding);
-        getChildren().addAll(this.name, this.slider);
+        getChildren().addAll(getNameLabel(), getSlider());
         setVisible(true);
 
+    }
+
+    public Slider getSlider() {
+        return this.slider.get();
+    }
+
+    public Label getNameLabel() {
+        return this.name.get();
     }
 }

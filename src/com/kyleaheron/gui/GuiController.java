@@ -3,7 +3,7 @@ package com.kyleaheron.gui;
 import com.kyleaheron.HueBridge;
 import com.kyleaheron.gui.components.ControllerButton;
 import com.kyleaheron.gui.components.ControllerSlider;
-import com.kyleaheron.lights.LightController;
+import com.kyleaheron.lights.Controller;
 import com.kyleaheron.util.LightUtil;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
@@ -23,7 +23,7 @@ public class GuiController implements Initializable{
     final static Background background = new Background(new BackgroundImage(new Image("textures/blurredlights.jpg", 1500, 1000, true, true), null, null, null, null));
 
     private SimpleObjectProperty<HueBridge> bridge;
-    private SimpleObjectProperty<LightController> currentController;
+    private SimpleObjectProperty<Controller> currentController;
 
     @FXML
     private BorderPane topPane;
@@ -56,9 +56,9 @@ public class GuiController implements Initializable{
         assert mainPane != null;
         mainPane.setBackground(background);
         assert lightButtonPane != null && getBridge() != null;
-        getBridge().getLights().forEach(light -> lightButtonPane.getChildren().add(new ControllerButton(new LightController(light), light.getName(), e -> {
+        getBridge().getLights().forEach(light -> lightButtonPane.getChildren().add(new ControllerButton(new Controller(light), light.getName(), e -> {
             ControllerButton source = (ControllerButton) e.getSource();
-            LightController targetController = (LightController) source.getTarget();
+            Controller targetController = (Controller) source.getTarget();
             if (getCurrentLightController() != targetController) {
                 lightButtonPane.getChildren().forEach(button -> ((ControllerButton) button).setState(ControllerButton.State.DEFAULT));
                 source.setState(ControllerButton.State.SELECTED);
@@ -67,7 +67,7 @@ public class GuiController implements Initializable{
                     ControllerButton button = (ControllerButton) b;
                     if (button.getTarget() == getCurrentLightController().getCurrentEffect()) {
                         button.setState(ControllerButton.State.SELECTED);
-                        createEffectControlPanel((LightController.Effect) button.getTarget());
+                        createEffectControlPanel((Controller.Effect) button.getTarget());
                     } else {
                         button.setState(ControllerButton.State.DEFAULT);
                     }
@@ -79,11 +79,11 @@ public class GuiController implements Initializable{
 
         })));
         assert effectButtonPane != null;
-        Arrays.stream(LightController.Effect.values()).forEach(effect -> effectButtonPane.getChildren().add(new ControllerButton(effect, effect.getName(), e -> {
+        Arrays.stream(Controller.Effect.values()).forEach(effect -> effectButtonPane.getChildren().add(new ControllerButton(effect, effect.getName(), e -> {
             assert e.getSource() instanceof ControllerButton;
             ControllerButton source = (ControllerButton) e.getSource();
-            assert source.getTarget() instanceof LightController.Effect;
-            LightController.Effect targetEffect = (LightController.Effect) source.getTarget();
+            assert source.getTarget() instanceof Controller.Effect;
+            Controller.Effect targetEffect = (Controller.Effect) source.getTarget();
             if (getCurrentLightController() != null) {
                 if (getCurrentLightController().getCurrentEffect() != targetEffect) {
                     effectButtonPane.getChildren().forEach(button -> ((ControllerButton) button).setState(ControllerButton.State.DEFAULT));
@@ -99,7 +99,7 @@ public class GuiController implements Initializable{
         })));
     }
 
-    private void createEffectControlPanel(LightController.Effect effect) {
+    private void createEffectControlPanel(Controller.Effect effect) {
         assert effectControlPane != null;
         effectControlPane.getChildren().clear();
         switch (effect) {
@@ -136,7 +136,7 @@ public class GuiController implements Initializable{
                 effectControlPane.getChildren().addAll(brBriSlider, brSpdSlider);
                 break;
             case SEQUENCE:
-                ControllerSlider sqBriSlider = new ControllerSlider("Brightness", 0.0d, 1.0d, getCurrentLightController().getSequenceBrightness(), ((observable, oldValue, newValue) -> {
+                ControllerSlider sqBriSlider = new ControllerSlider("Brightness", LightUtil.MIN_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS, getCurrentLightController().getSequenceBrightness(), ((observable, oldValue, newValue) -> {
                     getCurrentLightController().setSequenceBrightness(newValue.intValue());
                 }));
                 ControllerSlider sqSpdSlider = new ControllerSlider("Speed", 0.0d, 1.0d, getCurrentLightController().getSequenceSpeed(), ((observable, oldValue, newValue) -> {
@@ -151,7 +151,7 @@ public class GuiController implements Initializable{
                 effectControlPane.getChildren().addAll(sqBriSlider, sqSpdSlider, sqIntSlider);
                 break;
             case FLAME:
-                ControllerSlider flBriSlider = new ControllerSlider("Brightness", 0.0d, 1.0d, getCurrentLightController().getFlameBrightness(), ((observable, oldValue, newValue) -> {
+                ControllerSlider flBriSlider = new ControllerSlider("Brightness", LightUtil.MIN_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS, getCurrentLightController().getFlameBrightness(), ((observable, oldValue, newValue) -> {
                     getCurrentLightController().setFlameBrightness(newValue.intValue());
                 }));
                 ControllerSlider flTurbSlider = new ControllerSlider("Turbulence", 0.0d, 1.0d, getCurrentLightController().getFlameTurbulence(), ((observable, oldValue, newValue) -> {
@@ -162,7 +162,7 @@ public class GuiController implements Initializable{
                 effectControlPane.getChildren().addAll(flBriSlider, flTurbSlider);
                 break;
             case LIGHTNING:
-                ControllerSlider lnBriSlider = new ControllerSlider("Brightness", 0.0d, 1.0d, getCurrentLightController().getLightningBrightness(), ((observable, oldValue, newValue) -> {
+                ControllerSlider lnBriSlider = new ControllerSlider("Brightness", LightUtil.MIN_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS, getCurrentLightController().getLightningBrightness(), ((observable, oldValue, newValue) -> {
                     getCurrentLightController().setLightningBrightness(newValue.intValue());
                 }));
                 // Wind speed
@@ -171,12 +171,12 @@ public class GuiController implements Initializable{
                 break;
             case AUDIO_VISUALIZER:
                 // Use rainbow toggle
-                ControllerSlider avBriSlider = new ControllerSlider("Brightness", 0.0d, 1.0d, getCurrentLightController().getVisualizerBrightness(), ((observable, oldValue, newValue) -> {
+                ControllerSlider avBriSlider = new ControllerSlider("Brightness", LightUtil.MIN_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS, getCurrentLightController().getVisualizerBrightness(), ((observable, oldValue, newValue) -> {
                     getCurrentLightController().setVisualizerBrightness(newValue.intValue());
                 }));
                 ControllerSlider avBriBgSlider = null;
                 if (!getCurrentLightController().isVisualizerUsingRainbow()) {
-                    avBriBgSlider = new ControllerSlider("Background Brightness", 0.0d, 1.0d, getCurrentLightController().getVisualizerBgBrightness(), ((observable, oldValue, newValue) -> {
+                    avBriBgSlider = new ControllerSlider("Background Brightness", LightUtil.MIN_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS, getCurrentLightController().getVisualizerBgBrightness(), ((observable, oldValue, newValue) -> {
                         getCurrentLightController().setVisualizerBgBrightness(newValue.intValue());
                     }));
                 }
@@ -198,11 +198,11 @@ public class GuiController implements Initializable{
         return this.bridge.get();
     }
 
-    public LightController getCurrentLightController() {
+    public Controller getCurrentLightController() {
         return this.currentController.get();
     }
 
-    public void setCurrentLightController(LightController controller) {
+    public void setCurrentLightController(Controller controller) {
         this.currentController.set(controller);
     }
 }

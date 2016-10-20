@@ -1,14 +1,14 @@
 package com.kyleaheron.lights.effects;
 
 import com.kyleaheron.HueLight;
-import com.kyleaheron.lights.Effect;
+import com.kyleaheron.lights.IEffect;
 import com.kyleaheron.lights.EffectEnum;
 import com.kyleaheron.util.LightUtil;
 
 import java.awt.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Breathing implements Effect {
+public class Breathing implements IEffect {
 
     private HueLight light;
     private EffectEnum effect;

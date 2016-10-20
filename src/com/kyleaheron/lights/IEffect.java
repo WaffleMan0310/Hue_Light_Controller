@@ -1,11 +1,17 @@
 package com.kyleaheron.lights;
 
 import com.kyleaheron.HueLight;
+import com.kyleaheron.gui.IComponent;
+import com.kyleaheron.gui.components.ControllerSlider;
+import javafx.scene.layout.Pane;
 
+import java.awt.*;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
-public interface Effect {
+public interface IEffect {
 
     void setLight(HueLight light);
 
@@ -14,6 +20,8 @@ public interface Effect {
     void show();
 
     ConcurrentHashMap<PropertyKey<?>, Object> getPropertyMap();
+
+    //LinkedList<? extends Pane> getPropertyGuiControlMap();
 
     void setEffect(EffectEnum effect);
 
@@ -30,6 +38,22 @@ public interface Effect {
     default <T> void setProperty(PropertyKey<T> key, T newValue) {
         getPropertyMap().computeIfPresent(key, (keyObj, object) -> object = newValue);
     }
+    /*
+    default <T extends Color> PropertyKey<T> createPropertyWithColorChooser(String key, Class<T> type, T value) {
+        return null;
+    }
+
+    default <T extends Boolean> PropertyKey<T> createPropertyWithToggle(String key, Class<T> type, T value) {
+        return null;
+    }
+
+    default <T extends Number> PropertyKey<T> createPropertyWithSlider(String key, Class<T> type, T min, T max, T value) {
+        ControllerSlider slider = new ControllerSlider(key, min.doubleValue(), max.doubleValue(), value.doubleValue());
+        PropertyKey<T> propertyKey = createProperty(key, type, value);
+        slider.getSlider().valueProperty().addListener(((observable, oldValue, newValue) -> getPropertyMap().computeIfPresent(propertyKey, (pKey, object) -> object = newValue)));
+        return propertyKey;
+    }
+    */
 
     default <T> PropertyKey<T> createProperty(String key, Class<T> type, T defaultValue) {
         PropertyKey<T> propertyKey = new PropertyKey<>(key, type);

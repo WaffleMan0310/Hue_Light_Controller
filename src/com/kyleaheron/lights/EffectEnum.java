@@ -9,12 +9,13 @@ public enum EffectEnum {
     SEQUENCE("Sequence", Sequence.class),
     FLAME("Flame", Flame.class),
     LIGHTNING("Lightning", Lightning.class),
-    VISUALIZER("Visualizer", Visualizer.class);
+    VISUALIZER("Visualizer", Visualizer.class),
+    OFF("Off", Off.class);
 
     String effectName;
-    Class<? extends Effect> effectClass;
+    Class<? extends IEffect> effectClass;
 
-    EffectEnum(String effectName, Class<? extends Effect> effectClass) {
+    EffectEnum(String effectName, Class<? extends IEffect> effectClass) {
         this.effectName = effectName;
         this.effectClass = effectClass;
     }
@@ -23,7 +24,7 @@ public enum EffectEnum {
         return effectName;
     }
 
-    public Class<? extends Effect> getEffectClass() {
+    public Class<? extends IEffect> getEffectClass() {
         return effectClass;
     }
 }

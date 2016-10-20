@@ -14,7 +14,8 @@ TODO: Make api do a more concise check on the username.json, not just if its pre
 TODO: Make the application settings panel.
 TODO: Skins? Make use of.
 TODO: Static implementation of the the light object, or just the show, and output buffer to avoid sending too many commands.
-TODO: Switch the light controler to a tree map system of storing the variables, so the repetitive stuff can be looped @see GuiController.createEffectControlPanel()
+TODO: Implement the gui object container into all whom implement ieffect, test it out?
+TODO: Method for
  */
 
 public class Main extends Application  {

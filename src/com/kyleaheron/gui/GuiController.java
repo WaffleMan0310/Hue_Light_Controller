@@ -3,7 +3,7 @@ package com.kyleaheron.gui;
 import com.kyleaheron.HueBridge;
 import com.kyleaheron.gui.components.ControllerButton;
 import com.kyleaheron.lights.Controller;
-import com.kyleaheron.lights.Effect;
+import com.kyleaheron.lights.IEffect;
 import com.kyleaheron.lights.EffectEnum;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
@@ -65,7 +65,8 @@ public class GuiController implements Initializable{
                 setCurrentController(targetController);
                 effectButtonPane.getChildren().forEach(b -> {
                     ControllerButton button = (ControllerButton) b;
-                    if (button.getTarget().equals(getCurrentController().getCurrentEffect())) {
+                    EffectEnum buttonEffect = (EffectEnum) button.getTarget();
+                    if (buttonEffect.getEffectClass() == getCurrentController().getCurrentEffect().getClass()) {
                         button.setState(ControllerButton.State.SELECTED);
                         //createEffectControlPanel((Controller.EffectEnum) button.getTarget());
                     } else {
@@ -95,7 +96,7 @@ public class GuiController implements Initializable{
         })));
     }
 
-    private void createEffectControlPanel(Effect effect) {
+    private void createEffectControlPanel(IEffect effect) {
         assert effectControlPane != null;
         effectControlPane.getChildren().clear();
     }

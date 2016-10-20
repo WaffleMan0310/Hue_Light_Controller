@@ -1,16 +1,18 @@
 package com.kyleaheron.gui.components;
 
 import com.kyleaheron.gui.GuiController;
+import com.kyleaheron.gui.IComponent;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
-public class ControllerSlider extends VBox {
+public class ControllerSlider extends VBox implements IComponent {
 
     private static final Insets padding = new Insets(5, 0, 5, 0);
     private static final DropShadow shadow = new DropShadow();
@@ -42,5 +44,10 @@ public class ControllerSlider extends VBox {
 
     public Label getNameLabel() {
         return this.name.get();
+    }
+
+    @Override
+    public Pane getComponent() {
+        return this;
     }
 }

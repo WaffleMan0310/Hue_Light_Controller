@@ -1,7 +1,7 @@
 package com.kyleaheron.lights.effects;
 
 import com.kyleaheron.HueLight;
-import com.kyleaheron.lights.Effect;
+import com.kyleaheron.lights.IEffect;
 import com.kyleaheron.lights.EffectEnum;
 import com.kyleaheron.util.LightUtil;
 import net.beadsproject.beads.analysis.featureextractors.FFT;
@@ -14,7 +14,7 @@ import net.beadsproject.beads.ugens.Gain;
 import java.awt.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Visualizer implements Effect {
+public class Visualizer implements IEffect {
 
     private HueLight light;
     private EffectEnum effect;

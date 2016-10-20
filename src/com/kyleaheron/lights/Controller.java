@@ -1,7 +1,6 @@
 package com.kyleaheron.lights;
 
 import com.kyleaheron.HueLight;
-import com.kyleaheron.lights.effects.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,9 +13,9 @@ public class Controller {
 
     private HueLight light;
 
-    private List<Effect> effects = new ArrayList<>();
+    private List<IEffect> effects = new ArrayList<>();
 
-    private volatile Effect currentEffect;
+    private volatile IEffect currentEffect;
     private boolean shouldRun;
 
     private Thread lightControlThread = new Thread(() -> {
@@ -32,7 +31,7 @@ public class Controller {
         this.shouldRun = true;
         Arrays.stream(EffectEnum.values()).forEach(effect -> {
             try {
-                Effect effectInstance = effect.effectClass.newInstance();
+                IEffect effectInstance = effect.effectClass.newInstance();
                 effectInstance.setEffect(effect);
                 effectInstance.setLight(light);
                 effects.add(effectInstance);
@@ -52,13 +51,12 @@ public class Controller {
         return light;
     }
 
-    public synchronized Effect getCurrentEffect() {
+    public synchronized IEffect getCurrentEffect() {
         return currentEffect;
     }
 
     public synchronized void setCurrentEffect(EffectEnum newEffect) {
         if (effects.stream().filter(effect -> effect.getEffect() == newEffect).findFirst().isPresent()) {
-            System.out.println(effects.stream().filter(effect -> effect.getEffect() == newEffect).findFirst().get().getClass());
             this.currentEffect = effects.stream().filter(effect -> effect.getEffect() == newEffect).findFirst().get();
         }
     }

@@ -2,14 +2,13 @@ package com.kyleaheron.lights.effects;
 
 
 import com.kyleaheron.HueLight;
-import com.kyleaheron.lights.Effect;
+import com.kyleaheron.lights.IEffect;
 import com.kyleaheron.lights.EffectEnum;
 import com.kyleaheron.util.LightUtil;
-import com.sun.scenario.effect.light.Light;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Rainbow implements Effect {
+public class Rainbow implements IEffect {
 
     private volatile HueLight light;
     private EffectEnum effect;

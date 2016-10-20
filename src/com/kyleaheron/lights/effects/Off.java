@@ -1,37 +1,17 @@
 package com.kyleaheron.lights.effects;
 
 import com.kyleaheron.HueLight;
-import com.kyleaheron.lights.IEffect;
 import com.kyleaheron.lights.EffectEnum;
-import com.kyleaheron.util.LightUtil;
+import com.kyleaheron.lights.IEffect;
 
-import java.awt.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Static implements IEffect {
+public class Off implements IEffect{
 
-    private volatile HueLight light;
+    private HueLight light;
     private EffectEnum effect;
 
     private ConcurrentHashMap<PropertyKey<?>, Object> propertyMap = new ConcurrentHashMap<>();
-
-    public static PropertyKey<Integer> brightnessKey;
-    public static PropertyKey<Color> colorKey;
-
-    public Static() {
-        brightnessKey = createProperty("brightness", Integer.class, LightUtil.MAX_BRIGHTNESS);
-        colorKey = createProperty("color", Color.class, Color.RED);
-    }
-
-    @Override
-    public void show() {
-        getLight()
-
-                .setOn(true)
-                .setBrightness(getProperty(brightnessKey))
-                .setColor(getProperty(colorKey)) // Color Selector
-                .show();
-    }
 
     @Override
     public void setLight(HueLight light) {
@@ -41,6 +21,13 @@ public class Static implements IEffect {
     @Override
     public HueLight getLight() {
         return light;
+    }
+
+    @Override
+    public void show() {
+        getLight()
+                .setOn(false)
+                .show();
     }
 
     @Override

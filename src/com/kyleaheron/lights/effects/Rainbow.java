@@ -2,66 +2,77 @@ package com.kyleaheron.lights.effects;
 
 
 import com.kyleaheron.HueLight;
+import com.kyleaheron.lights.Effect;
+import com.kyleaheron.lights.EffectEnum;
+import com.kyleaheron.util.LightUtil;
+import com.sun.scenario.effect.light.Light;
 
-public class Rainbow extends Effect{
+import java.util.concurrent.ConcurrentHashMap;
 
-    private volatile int brightness;
-    private volatile int speed;
-    private volatile int resolution;
-    private volatile boolean flashing;
+public class Rainbow implements Effect {
+
+    private volatile HueLight light;
+    private EffectEnum effect;
+
+    private ConcurrentHashMap<PropertyKey<?>, Object> propertyMap = new ConcurrentHashMap<>();
+
+    public static PropertyKey<Integer> brightnessKey;
+    public static PropertyKey<Integer> speedKey;
+    public static PropertyKey<Integer> resolutionKey;
+    public static PropertyKey<Boolean> flashingKey;
 
     private int hue = 0;
+
+    public Rainbow() {
+        brightnessKey = createProperty("brightness", Integer.class, LightUtil.MAX_BRIGHTNESS);
+        speedKey = createProperty("speed", Integer.class, 2000);
+        resolutionKey = createProperty("resolution", Integer.class, 3);
+        flashingKey = createProperty("flashing", Boolean.class, false);
+    }
 
     @Override
     public void show() {
         try {
             getLight()
                     .setOn(true)
-                    .setBrightness(getBrightness())
-                    .setTransitionTime(isFlashing() ? 0 : getSpeed())
+                    .setBrightness(getProperty(brightnessKey))
+                    .setTransitionTime(!getProperty(flashingKey) ? getProperty(speedKey) : 0)
                     .setHue(this.hue)
                     .show();
-            Thread.sleep(getSpeed());
+            Thread.sleep(getProperty(speedKey));
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             if (this.hue > 65535) {
                 this.hue = 0;
             } else {
-                this.hue += (13107 / getResolution());
+                this.hue += (13107 / getProperty(resolutionKey));
             }
         }
     }
 
-    public int getBrightness() {
-        return brightness;
+    @Override
+    public void setLight(HueLight light) {
+        this.light = light;
     }
 
-    public void setBrightness(int brightness) {
-        this.brightness = brightness;
+    @Override
+    public HueLight getLight() {
+        return light;
     }
 
-    public int getSpeed() {
-        return speed;
+    @Override
+    public ConcurrentHashMap<PropertyKey<?>, Object> getPropertyMap() {
+        return propertyMap;
     }
 
-    public void setSpeed(int speed) {
-        this.speed = speed;
+    @Override
+    public void setEffect(EffectEnum effect) {
+        this.effect = effect;
     }
 
-    public int getResolution() {
-        return resolution;
-    }
-
-    public void setResolution(int resolution) {
-        this.resolution = resolution;
-    }
-
-    public boolean isFlashing() {
-        return flashing;
-    }
-
-    public void setFlashing(boolean flashing) {
-        this.flashing = flashing;
+    @Override
+    public EffectEnum getEffect() {
+        return effect;
     }
 }

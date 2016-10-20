@@ -1,6 +1,9 @@
 package com.kyleaheron.lights.effects;
 
 import com.kyleaheron.HueLight;
+import com.kyleaheron.lights.Effect;
+import com.kyleaheron.lights.EffectEnum;
+import com.kyleaheron.util.LightUtil;
 import net.beadsproject.beads.analysis.featureextractors.FFT;
 import net.beadsproject.beads.analysis.featureextractors.PowerSpectrum;
 import net.beadsproject.beads.analysis.segmenters.ShortFrameSegmenter;
@@ -9,27 +12,41 @@ import net.beadsproject.beads.core.UGen;
 import net.beadsproject.beads.ugens.Gain;
 
 import java.awt.*;
+import java.util.concurrent.ConcurrentHashMap;
 
-public class Visualizer extends Effect{
+public class Visualizer implements Effect {
 
-    private volatile int brightness = 150;
-    private volatile int backgroundBrightness = 100;
-    private volatile double sensitivity = 0.4d;
-    private volatile float gain = 0.25f;
-    private volatile boolean usingRainbow = false;
-    private volatile Color color = Color.CYAN;
-    private volatile Color backgroundColor = Color.BLUE;
+    private HueLight light;
+    private EffectEnum effect;
 
-    private static volatile AudioContext audioContext = new AudioContext();
-    private static volatile UGen stereoMixInput = audioContext.getAudioInput();
-    private static volatile Gain masterGain = new Gain(audioContext, 2, 0.25f);
-    private static volatile ShortFrameSegmenter segmenter = new ShortFrameSegmenter(audioContext);
-    private static volatile FFT fft = new FFT();
-    private static volatile PowerSpectrum powerSpectrum = new PowerSpectrum();
+    private ConcurrentHashMap<PropertyKey<?>, Object> propertyMap = new ConcurrentHashMap<>();
+
+    public static PropertyKey<Integer> brightnessKey;
+    public static PropertyKey<Integer> backgroundBrightnessKey;
+    public static PropertyKey<Double> sensitivityKey;
+    public static PropertyKey<Double> gainKey;
+    public static PropertyKey<Boolean> rainbowKey;
+    public static PropertyKey<Color> colorKey;
+    public static PropertyKey<Color> backgroundColorKey;
+
+    private static AudioContext audioContext = new AudioContext();
+    private static UGen stereoMixInput = audioContext.getAudioInput();
+    private static Gain masterGain = new Gain(audioContext, 2, 0.25f);
+    private static ShortFrameSegmenter segmenter = new ShortFrameSegmenter(audioContext);
+    private static FFT fft = new FFT();
+    private static PowerSpectrum powerSpectrum = new PowerSpectrum();
 
     private int hue;
 
-    Visualizer() {
+    public Visualizer() {
+        brightnessKey = createProperty("brightness", Integer.class, LightUtil.MAX_BRIGHTNESS);
+        backgroundBrightnessKey = createProperty("backgroundBrightness", Integer.class, LightUtil.MAX_BRIGHTNESS);
+        sensitivityKey = createProperty("sensitivity", Double.class, 0.5d);
+        gainKey = createProperty("gain", Double.class, 0.25d);
+        rainbowKey = createProperty("rainbow", Boolean.class, true);
+        colorKey = createProperty("color", Color.class, Color.RED);
+        backgroundColorKey = createProperty("backgroundColor", Color.class, Color.ORANGE);
+
         masterGain.addInput(stereoMixInput);
         segmenter.addInput(stereoMixInput);
         segmenter.addListener(fft);
@@ -42,16 +59,16 @@ public class Visualizer extends Effect{
         if (!audioContext.isRunning()) {
             audioContext.start();
         }
-        if (getGain() != masterGain.getGain()) {
-            masterGain.setGain(getGain());
+        if (getProperty(gainKey) != masterGain.getGain()) {
+            masterGain.setGain(getProperty(gainKey).floatValue());
         }
         float[] features = powerSpectrum.getFeatures();
         if (features != null) {
-            if (features[0] > 500 * (1 / getSensitivity()) || features[1] > 350 * (1 / getSensitivity()) || features[2] > 200 * (1 / getSensitivity())) {
-                if (isUsingRainbow()) {
+            if (features[0] > 500 * (1 / getProperty(sensitivityKey)) || features[1] > 350 * (1 / getProperty(sensitivityKey)) || features[2] > 200 * (1 / getProperty(sensitivityKey))) {
+                if (getProperty(rainbowKey)) {
                     getLight()
                             .setOn(true)
-                            .setBrightness(getBrightness())
+                            .setBrightness(getProperty(brightnessKey))
                             .setHue(hue)
                             .setTransitionTime(100)
                             .show();
@@ -63,13 +80,13 @@ public class Visualizer extends Effect{
                 } else {
                     getLight()
                             .setOn(true)
-                            .setBrightness(getBrightness())
-                            .setColor(getColor())
+                            .setBrightness(getProperty(brightnessKey))
+                            .setColor(getProperty(colorKey))
                             .setTransitionTime(0)
                             .show();
                 }
             } else {
-                if (isUsingRainbow()) {
+                if (getProperty(rainbowKey)) {
                     getLight()
                             .setOn(false)
                             .setTransitionTime(100)
@@ -77,8 +94,8 @@ public class Visualizer extends Effect{
                 } else { // Set Mode
                     getLight()
                             .setOn(true)
-                            .setBrightness(getBackgroundBrightness())
-                            .setColor(getBackgroundColor())
+                            .setBrightness(getProperty(backgroundBrightnessKey))
+                            .setColor(getProperty(backgroundColorKey))
                             .setTransitionTime(0)
                             .show();
                 }
@@ -92,59 +109,28 @@ public class Visualizer extends Effect{
         }
     }
 
-    public int getBrightness() {
-        return brightness;
+    @Override
+    public void setLight(HueLight light) {
+        this.light = light;
     }
 
-    public void setBrightness(int brightness) {
-        this.brightness = brightness;
+    @Override
+    public HueLight getLight() {
+        return light;
     }
 
-    public int getBackgroundBrightness() {
-        return backgroundBrightness;
+    @Override
+    public ConcurrentHashMap<PropertyKey<?>, Object> getPropertyMap() {
+        return propertyMap;
     }
 
-    public void setBackgroundBrightness(int backgroundBrightness) {
-        this.backgroundBrightness = backgroundBrightness;
+    @Override
+    public void setEffect(EffectEnum effect) {
+        this.effect = effect;
     }
 
-    public double getSensitivity() {
-        return sensitivity;
-    }
-
-    public void setSensitivity(double sensitivity) {
-        this.sensitivity = sensitivity;
-    }
-
-    public float getGain() {
-        return gain;
-    }
-
-    public void setGain(float gain) {
-        this.gain = gain;
-    }
-
-    public boolean isUsingRainbow() {
-        return usingRainbow;
-    }
-
-    public void setUsingRainbow(boolean usingRainbow) {
-        this.usingRainbow = usingRainbow;
-    }
-
-    public Color getColor() {
-        return color;
-    }
-
-    public void setColor(Color color) {
-        this.color = color;
-    }
-
-    public Color getBackgroundColor() {
-        return backgroundColor;
-    }
-
-    public void setBackgroundColor(Color backgroundColor) {
-        this.backgroundColor = backgroundColor;
+    @Override
+    public EffectEnum getEffect() {
+        return effect;
     }
 }

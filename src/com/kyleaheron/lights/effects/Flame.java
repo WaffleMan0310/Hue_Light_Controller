@@ -1,19 +1,34 @@
 package com.kyleaheron.lights.effects;
 
 import com.kyleaheron.HueLight;
+import com.kyleaheron.lights.Effect;
+import com.kyleaheron.lights.EffectEnum;
+import com.kyleaheron.util.LightUtil;
 
 import java.awt.*;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 
-public class Flame extends Effect{
+public class Flame implements Effect {
+
+    private HueLight light;
+    private EffectEnum effect;
+
+    private ConcurrentHashMap<PropertyKey<?>, Object> propertyMap = new ConcurrentHashMap<>();
 
     private static final Random random = new Random();
 
-    private volatile int brightness;
-    private volatile double turbulence;
-    private volatile Color color;
+    public static PropertyKey<Integer> brightnessKey;
+    public static PropertyKey<Double> turbulenceKey;
+    public static PropertyKey<Color> colorKey;
 
     private long startTime = System.currentTimeMillis();
+
+    public Flame() {
+        brightnessKey = createProperty("brightness", Integer.class, LightUtil.MAX_BRIGHTNESS);
+        turbulenceKey = createProperty("turbulence", Double.class, 0.5d);
+        colorKey = createProperty("color", Color.class, Color.RED);
+    }
 
     @Override
     public void show() {
@@ -21,17 +36,17 @@ public class Flame extends Effect{
             if (System.currentTimeMillis() - startTime > random.nextFloat() * 1000) {
                 getLight()
                         .setOn(true)
-                        .setBrightness(getBrightness() - (int) (random.nextFloat() * (getBrightness() / 2.5f)))
+                        .setBrightness(getProperty(brightnessKey) - (int) (random.nextFloat() * (getProperty(brightnessKey) / 2.5f)))
                         .setTransitionTime(200)
-                        .setColor(getColor())
+                        .setColor(getProperty(colorKey))
                         .show();
                 startTime = System.currentTimeMillis();
             } else {
                 getLight()
                         .setOn(true)
-                        .setBrightness(getBrightness())
+                        .setBrightness(getProperty(brightnessKey))
                         .setTransitionTime(200)
-                        .setColor(getColor())
+                        .setColor(getProperty(colorKey))
                         .show();
             }
         } catch (Exception e) {
@@ -39,27 +54,28 @@ public class Flame extends Effect{
         }
     }
 
-    public int getBrightness() {
-        return brightness;
+    @Override
+    public void setLight(HueLight light) {
+        this.light = light;
     }
 
-    public void setBrightness(int brightness) {
-        this.brightness = brightness;
+    @Override
+    public HueLight getLight() {
+        return light;
     }
 
-    public double getTurbulence() {
-        return turbulence;
+    @Override
+    public ConcurrentHashMap<PropertyKey<?>, Object> getPropertyMap() {
+        return propertyMap;
     }
 
-    public void setTurbulence(double turbulence) {
-        this.turbulence = turbulence;
+    @Override
+    public void setEffect(EffectEnum effect) {
+        this.effect = effect;
     }
 
-    public Color getColor() {
-        return color;
-    }
-
-    public void setColor(Color color) {
-        this.color = color;
+    @Override
+    public EffectEnum getEffect() {
+        return effect;
     }
 }

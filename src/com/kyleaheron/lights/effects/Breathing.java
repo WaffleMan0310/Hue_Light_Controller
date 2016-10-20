@@ -1,16 +1,31 @@
 package com.kyleaheron.lights.effects;
 
 import com.kyleaheron.HueLight;
+import com.kyleaheron.lights.Effect;
+import com.kyleaheron.lights.EffectEnum;
+import com.kyleaheron.util.LightUtil;
 
 import java.awt.*;
+import java.util.concurrent.ConcurrentHashMap;
 
-public class Breathing extends Effect {
+public class Breathing implements Effect {
 
-    private volatile int brightness;
-    private volatile int speed;
-    private volatile Color color;
+    private HueLight light;
+    private EffectEnum effect;
+
+    private ConcurrentHashMap<PropertyKey<?>, Object> propertyMap = new ConcurrentHashMap<>();
+
+    public static PropertyKey<Integer> brightnessKey;
+    public static PropertyKey<Integer> speedKey;
+    public static PropertyKey<Color> colorKey;
 
     private int state = 0;
+
+    public Breathing() {
+        createProperty("brightness", Integer.class, LightUtil.MAX_BRIGHTNESS);
+        createProperty("speed", Integer.class, 2000);
+        createProperty("color", Color.class, Color.RED);
+    }
 
     @Override
     public void show() {
@@ -18,19 +33,19 @@ public class Breathing extends Effect {
             if (state == 0) {
                 getLight()
                         .setOn(true)
-                        .setBrightness(getBrightness())
-                        .setTransitionTime(getSpeed())
-                        .setColor(getColor())
+                        .setBrightness(getProperty(brightnessKey))
+                        .setTransitionTime(getProperty(speedKey))
+                        .setColor(getProperty(colorKey))
                         .show();
-                Thread.sleep(getSpeed() - 80);
+                Thread.sleep(getProperty(speedKey) - 80);
                 state++;
             } else {
                 getLight()
                         .setOn(true)
-                        .setTransitionTime(getSpeed())
+                        .setTransitionTime(getProperty(speedKey))
                         .setBrightness(0)
                         .show();
-                Thread.sleep(getSpeed() - 80);
+                Thread.sleep(getProperty(speedKey) - 80);
                 state = 0;
             }
         } catch (Exception e) {
@@ -38,27 +53,28 @@ public class Breathing extends Effect {
         }
     }
 
-    public int getBrightness() {
-        return brightness;
+    @Override
+    public void setLight(HueLight light) {
+        this.light = light;
     }
 
-    public void setBrightness(int brightness) {
-        this.brightness = brightness;
+    @Override
+    public HueLight getLight() {
+        return light;
     }
 
-    public int getSpeed() {
-        return speed;
+    @Override
+    public ConcurrentHashMap<PropertyKey<?>, Object> getPropertyMap() {
+        return propertyMap;
     }
 
-    public void setSpeed(int speed) {
-        this.speed = speed;
+    @Override
+    public void setEffect(EffectEnum effect) {
+        this.effect = effect;
     }
 
-    public Color getColor() {
-        return color;
-    }
-
-    public void setColor(Color color) {
-        this.color = color;
+    @Override
+    public EffectEnum getEffect() {
+        return effect;
     }
 }

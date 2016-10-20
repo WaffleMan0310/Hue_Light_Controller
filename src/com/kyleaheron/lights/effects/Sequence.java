@@ -1,63 +1,74 @@
 package com.kyleaheron.lights.effects;
 
 import com.kyleaheron.HueLight;
+import com.kyleaheron.lights.Effect;
+import com.kyleaheron.lights.EffectEnum;
+import com.kyleaheron.util.LightUtil;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.concurrent.ConcurrentHashMap;
 
-public class Sequence extends Effect {
+public class Sequence implements Effect {
 
+    private HueLight light;
+    private EffectEnum effect;
 
-    private volatile int brightness;
-    private volatile int interval;
-    private volatile int speed;
-    private volatile Color[] sequence;
+    private ConcurrentHashMap<PropertyKey<?>, Object> propertyMap = new ConcurrentHashMap<>();
+
+    public static PropertyKey<Integer> brightnessKey;
+    public static PropertyKey<Color[]> sequenceKey;
+    public static PropertyKey<Integer> speedKey;
+    public static PropertyKey<Integer> intervalKey;
+
+    public Sequence() {
+        brightnessKey = createProperty("brightness", Integer.class, LightUtil.MAX_BRIGHTNESS);
+        sequenceKey = createProperty("sequence", Color[].class, new Color[]{Color.RED});
+        speedKey = createProperty("speed", Integer.class, 2000);
+        intervalKey = createProperty("interval", Integer.class, 2000);
+    }
 
     @Override
     public void show() {
         try {
-            for (Color color : getSequence()) {
+            for (Color color : getProperty(sequenceKey)) {
                 getLight()
                         .setOn(true)
-                        .setBrightness(getBrightness())
+                        .setBrightness(getProperty(brightnessKey))
                         .setColor(color)
-                        .setTransitionTime(getSpeed())
+                        .setTransitionTime(getProperty(speedKey))
                         .show();
-                Thread.sleep(getInterval());
+                Thread.sleep(getProperty(intervalKey));
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public int getBrightness() {
-        return brightness;
+    @Override
+    public void setLight(HueLight light) {
+        this.light = light;
     }
 
-    public void setBrightness(int brightness) {
-        this.brightness = brightness;
+    @Override
+    public HueLight getLight() {
+        return light;
     }
 
-    public int getInterval() {
-        return interval;
+    @Override
+    public ConcurrentHashMap<PropertyKey<?>, Object> getPropertyMap() {
+        return propertyMap;
     }
 
-    public void setInterval(int interval) {
-        this.interval = interval;
+    @Override
+    public void setEffect(EffectEnum effect) {
+        this.effect = effect;
     }
 
-    public int getSpeed() {
-        return speed;
-    }
-
-    public void setSpeed(int speed) {
-        this.speed = speed;
-    }
-
-    public Color[] getSequence() {
-        return sequence;
-    }
-
-    public void setSequence(Color[] sequence) {
-        this.sequence = sequence;
+    @Override
+    public EffectEnum getEffect() {
+        return effect;
     }
 }

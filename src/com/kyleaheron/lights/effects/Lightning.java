@@ -1,23 +1,36 @@
 package com.kyleaheron.lights.effects;
 
 import com.kyleaheron.HueLight;
+import com.kyleaheron.lights.Effect;
+import com.kyleaheron.lights.EffectEnum;
+import com.kyleaheron.util.LightUtil;
 
 import java.awt.*;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 
-public class Lightning extends Effect {
+public class Lightning implements Effect {
+
+    private HueLight light;
+    private EffectEnum effect;
+
+    private ConcurrentHashMap<PropertyKey<?>, Object> propertyMap = new ConcurrentHashMap<>();
 
     public static final Random random = new Random();
 
-    private volatile int brightness;
-    private volatile Color color;
+    public static PropertyKey<Integer> brightnessKey;
+    public static PropertyKey<Color> colorKey;
 
-    private int lightningMaxGapMs = 60000;
     private int lightningMaxStrikes = 12;
     private int lightningMaxStrikeLengthMs = 300;
     private int lightningMaxStrikeGapMs = 600;
 
     private long startTime = System.currentTimeMillis();
+
+    public Lightning() {
+        brightnessKey = createProperty("brightness", Integer.class, LightUtil.MAX_BRIGHTNESS);
+        colorKey = createProperty("color", Color.class, Color.WHITE);
+    }
 
     @Override
     public void show() {
@@ -26,8 +39,8 @@ public class Lightning extends Effect {
                 for (int strike = 0; strike < random.nextInt(lightningMaxStrikes); strike++) {
                     getLight()
                             .setOn(true)
-                            .setBrightness(getBrightness())
-                            .setColor(getColor())
+                            .setBrightness(getProperty(brightnessKey))
+                            .setColor(getProperty(colorKey))
                             .setTransitionTime(0)
                             .show();
                     Thread.sleep(random.nextInt(lightningMaxStrikeLengthMs));
@@ -35,7 +48,7 @@ public class Lightning extends Effect {
                             .setOn(false)
                             .setTransitionTime(0)
                             .show();
-                    Thread.sleep(random.nextInt(lightningMaxGapMs));
+                    Thread.sleep(random.nextInt(lightningMaxStrikeGapMs));
                 }
                 startTime = System.currentTimeMillis();
             } else {
@@ -46,19 +59,28 @@ public class Lightning extends Effect {
         }
     }
 
-    public int getBrightness() {
-        return brightness;
+    @Override
+    public void setLight(HueLight light) {
+        this.light = light;
     }
 
-    public void setBrightness(int brightness) {
-        this.brightness = brightness;
+    @Override
+    public HueLight getLight() {
+        return light;
     }
 
-    public Color getColor() {
-        return color;
+    @Override
+    public ConcurrentHashMap<PropertyKey<?>, Object> getPropertyMap() {
+        return propertyMap;
     }
 
-    public void setColor(Color color) {
-        this.color = color;
+    @Override
+    public void setEffect(EffectEnum effect) {
+        this.effect = effect;
+    }
+
+    @Override
+    public EffectEnum getEffect() {
+        return effect;
     }
 }

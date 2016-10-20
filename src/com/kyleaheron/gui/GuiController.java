@@ -2,9 +2,9 @@ package com.kyleaheron.gui;
 
 import com.kyleaheron.HueBridge;
 import com.kyleaheron.gui.components.ControllerButton;
-import com.kyleaheron.gui.components.ControllerSlider;
 import com.kyleaheron.lights.Controller;
-import com.kyleaheron.util.LightUtil;
+import com.kyleaheron.lights.Effect;
+import com.kyleaheron.lights.EffectEnum;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -59,150 +59,56 @@ public class GuiController implements Initializable{
         getBridge().getLights().forEach(light -> lightButtonPane.getChildren().add(new ControllerButton(new Controller(light), light.getName(), e -> {
             ControllerButton source = (ControllerButton) e.getSource();
             Controller targetController = (Controller) source.getTarget();
-            if (getCurrentLightController() != targetController) {
+            if (targetController != getCurrentController()) {
                 lightButtonPane.getChildren().forEach(button -> ((ControllerButton) button).setState(ControllerButton.State.DEFAULT));
                 source.setState(ControllerButton.State.SELECTED);
-                setCurrentLightController(targetController);
+                setCurrentController(targetController);
                 effectButtonPane.getChildren().forEach(b -> {
                     ControllerButton button = (ControllerButton) b;
-                    if (button.getTarget() == getCurrentLightController().getCurrentEffect()) {
+                    if (button.getTarget().equals(getCurrentController().getCurrentEffect())) {
                         button.setState(ControllerButton.State.SELECTED);
-                        createEffectControlPanel((Controller.Effect) button.getTarget());
+                        //createEffectControlPanel((Controller.EffectEnum) button.getTarget());
                     } else {
                         button.setState(ControllerButton.State.DEFAULT);
                     }
                 });
             } else {
                 source.setState(ControllerButton.State.DEFAULT);
-                setCurrentLightController(null);
+                setCurrentController(null);
             }
 
         })));
         assert effectButtonPane != null;
-        Arrays.stream(Controller.Effect.values()).forEach(effect -> effectButtonPane.getChildren().add(new ControllerButton(effect, effect.getName(), e -> {
-            assert e.getSource() instanceof ControllerButton;
+        Arrays.stream(EffectEnum.values()).forEach(effect -> effectButtonPane.getChildren().add(new ControllerButton(effect, effect.getEffectName(), e -> {
             ControllerButton source = (ControllerButton) e.getSource();
-            assert source.getTarget() instanceof Controller.Effect;
-            Controller.Effect targetEffect = (Controller.Effect) source.getTarget();
-            if (getCurrentLightController() != null) {
-                if (getCurrentLightController().getCurrentEffect() != targetEffect) {
-                    effectButtonPane.getChildren().forEach(button -> ((ControllerButton) button).setState(ControllerButton.State.DEFAULT));
-                    source.setState(ControllerButton.State.SELECTED);
-                    getCurrentLightController().setCurrentEffect(targetEffect);
-                    createEffectControlPanel(targetEffect);
-                } else {
-                    source.setState(ControllerButton.State.DEFAULT);
-                    getCurrentLightController().setCurrentEffect(null);
-                    createEffectControlPanel(null);
-                }
+            EffectEnum targetEffect = (EffectEnum) source.getTarget();
+            if (targetEffect.getEffectClass() != getCurrentController().getCurrentEffect().getClass()) {
+                effectButtonPane.getChildren().forEach(button -> ((ControllerButton) button).setState(ControllerButton.State.DEFAULT));
+                source.setState(ControllerButton.State.SELECTED);
+                getCurrentController().setCurrentEffect(targetEffect);
+                //createEffectControlPanel(targetEffect);
+            } else {
+                source.setState(ControllerButton.State.DEFAULT);
+                getCurrentController().setCurrentEffect(null);
+                //createEffectControlPanel(null);
             }
         })));
     }
 
-    private void createEffectControlPanel(Controller.Effect effect) {
+    private void createEffectControlPanel(Effect effect) {
         assert effectControlPane != null;
         effectControlPane.getChildren().clear();
-        switch (effect) {
-            case STATIC:
-                ControllerSlider stBriSlider = new ControllerSlider("Brightness", LightUtil.MIN_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS, getCurrentLightController().getStaticBrightness(), (observable, oldValue, newValue) -> {
-                    getCurrentLightController().setStaticBrightness(newValue.intValue());
-                });
-                effectControlPane.getChildren().add(stBriSlider);
-                break;
-            case RAINBOW:
-                // Smooth toggle
-                ControllerSlider rbBriSlider = new ControllerSlider("Brightness", LightUtil.MIN_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS, getCurrentLightController().getRainbowBrightness(), ((observable, oldValue, newValue) -> {
-                    getCurrentLightController().setRainbowBrightness(newValue.intValue());
-                }));
-                ControllerSlider rbSpdSlider = new ControllerSlider("Speed", 0.0d, 1.0d, getCurrentLightController().getRainbowSpeed(), ((observable, oldValue, newValue) -> {
-                    // Fix.
-                    //getCurrentLightController().setRainbowSpeed(newValue.doubleValue());
-                }));
-                ControllerSlider rbResSlider = new ControllerSlider("Resolution", 0.0d, 1.0d, getCurrentLightController().getRainbowResolution(), ((observable, oldValue, newValue) -> {
-                    // Fix.
-                    // getCurrentLightController().setRainbowResolution(newValue.doubleValue());
-                }));
-                effectControlPane.getChildren().addAll(rbBriSlider, rbSpdSlider, rbResSlider);
-                break;
-            case BREATHING:
-                ControllerSlider brBriSlider = new ControllerSlider("Brightness", LightUtil.MIN_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS, getCurrentLightController().getBreathingBrightness(), ((observable, oldValue, newValue) -> {
-                    getCurrentLightController().setBreathingBrightness(newValue.intValue());
-                }));
-                ControllerSlider brSpdSlider = new ControllerSlider("Speed", 0.0d, 1.0d, getCurrentLightController().getBreathingSpeed(), ((observable, oldValue, newValue) -> {
-                    // Fix.
-                    // getCurrentLightController().setBreathingSpeed(newValue.doubleValue());
-                }));
-                // Color selector
-                effectControlPane.getChildren().addAll(brBriSlider, brSpdSlider);
-                break;
-            case SEQUENCE:
-                ControllerSlider sqBriSlider = new ControllerSlider("Brightness", LightUtil.MIN_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS, getCurrentLightController().getSequenceBrightness(), ((observable, oldValue, newValue) -> {
-                    getCurrentLightController().setSequenceBrightness(newValue.intValue());
-                }));
-                ControllerSlider sqSpdSlider = new ControllerSlider("Speed", 0.0d, 1.0d, getCurrentLightController().getSequenceSpeed(), ((observable, oldValue, newValue) -> {
-                    // Fix.
-                    // getCurrentLightController().setSequenceSpeed(newValue.doubleValue());
-                }));
-                ControllerSlider sqIntSlider = new ControllerSlider("Interval", 0.0d, 1.0d, getCurrentLightController().getSequenceInterval(), ((observable, oldValue, newValue) -> {
-                    // Fix.
-                    // getCurrentLightController().setSequenceInterval(newValue.doubleValue());
-                }));
-                // Color list selector
-                effectControlPane.getChildren().addAll(sqBriSlider, sqSpdSlider, sqIntSlider);
-                break;
-            case FLAME:
-                ControllerSlider flBriSlider = new ControllerSlider("Brightness", LightUtil.MIN_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS, getCurrentLightController().getFlameBrightness(), ((observable, oldValue, newValue) -> {
-                    getCurrentLightController().setFlameBrightness(newValue.intValue());
-                }));
-                ControllerSlider flTurbSlider = new ControllerSlider("Turbulence", 0.0d, 1.0d, getCurrentLightController().getFlameTurbulence(), ((observable, oldValue, newValue) -> {
-                    // Fix.
-                    // getCurrentLightController().setFlameTurbulence(newValue.doubleValue());
-                }));
-                // Color selector
-                effectControlPane.getChildren().addAll(flBriSlider, flTurbSlider);
-                break;
-            case LIGHTNING:
-                ControllerSlider lnBriSlider = new ControllerSlider("Brightness", LightUtil.MIN_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS, getCurrentLightController().getLightningBrightness(), ((observable, oldValue, newValue) -> {
-                    getCurrentLightController().setLightningBrightness(newValue.intValue());
-                }));
-                // Wind speed
-                // Color selector
-                effectControlPane.getChildren().addAll(lnBriSlider);
-                break;
-            case AUDIO_VISUALIZER:
-                // Use rainbow toggle
-                ControllerSlider avBriSlider = new ControllerSlider("Brightness", LightUtil.MIN_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS, getCurrentLightController().getVisualizerBrightness(), ((observable, oldValue, newValue) -> {
-                    getCurrentLightController().setVisualizerBrightness(newValue.intValue());
-                }));
-                ControllerSlider avBriBgSlider = null;
-                if (!getCurrentLightController().isVisualizerUsingRainbow()) {
-                    avBriBgSlider = new ControllerSlider("Background Brightness", LightUtil.MIN_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS, getCurrentLightController().getVisualizerBgBrightness(), ((observable, oldValue, newValue) -> {
-                        getCurrentLightController().setVisualizerBgBrightness(newValue.intValue());
-                    }));
-                }
-                ControllerSlider avGainSlider = new ControllerSlider("Gain", 0.0d, 1.0d, getCurrentLightController().getVisualizerGain(), ((observable, oldValue, newValue) -> {
-                    getCurrentLightController().setVisualizerGain(newValue.floatValue()); // Use double
-                }));
-                ControllerSlider avSensSlider = new ControllerSlider("Sensitivity", 0.0d, 1.0d, getCurrentLightController().getVisualizerSensitivity(), ((observable, oldValue, newValue) -> {
-                    getCurrentLightController().setVisualizerSensitivity(newValue.doubleValue());
-                }));
-                // Color selector
-                // Color selector
-                // Visualizer
-                effectControlPane.getChildren().addAll(avBriSlider, avBriBgSlider != null ? avBriBgSlider : null, avGainSlider, avSensSlider);
-                break;
-        }
     }
 
     public HueBridge getBridge() {
         return this.bridge.get();
     }
 
-    public Controller getCurrentLightController() {
+    public Controller getCurrentController() {
         return this.currentController.get();
     }
 
-    public void setCurrentLightController(Controller controller) {
+    public void setCurrentController(Controller controller) {
         this.currentController.set(controller);
     }
 }

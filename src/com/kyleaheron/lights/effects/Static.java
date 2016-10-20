@@ -1,36 +1,62 @@
 package com.kyleaheron.lights.effects;
 
 import com.kyleaheron.HueLight;
+import com.kyleaheron.lights.Effect;
+import com.kyleaheron.lights.EffectEnum;
+import com.kyleaheron.util.LightUtil;
 
 import java.awt.*;
+import java.util.concurrent.ConcurrentHashMap;
 
-public class Static extends Effect{
+public class Static implements Effect {
 
-    private volatile int brightness;
-    private volatile Color color;
+    private volatile HueLight light;
+    private EffectEnum effect;
+
+    private ConcurrentHashMap<PropertyKey<?>, Object> propertyMap = new ConcurrentHashMap<>();
+
+    public static PropertyKey<Integer> brightnessKey;
+    public static PropertyKey<Color> colorKey;
+
+    public Static() {
+        brightnessKey = createProperty("brightness", Integer.class, LightUtil.MAX_BRIGHTNESS);
+        colorKey = createProperty("color", Color.class, Color.RED);
+    }
 
     @Override
     public void show() {
-        getLight()
-                .setOn(true)
-                .setBrightness(getBrightness())
-                .setColor(getColor())
-                .show();
+        if (getLight() != null) {
+            getLight()
+                    .setOn(true)
+                    .setBrightness(getProperty(brightnessKey))
+                    .setColor(getProperty(colorKey)) // Color Selector
+                    .show();
+        }
+
     }
 
-    public int getBrightness() {
-        return brightness;
+    @Override
+    public void setLight(HueLight light) {
+        this.light = light;
     }
 
-    public void setBrightness(int brightness) {
-        this.brightness = brightness;
+    @Override
+    public HueLight getLight() {
+        return light;
     }
 
-    public Color getColor() {
-        return color;
+    @Override
+    public ConcurrentHashMap<PropertyKey<?>, Object> getPropertyMap() {
+        return propertyMap;
     }
 
-    public void setColor(Color color) {
-        this.color = color;
+    @Override
+    public void setEffect(EffectEnum effect) {
+        this.effect = effect;
+    }
+
+    @Override
+    public EffectEnum getEffect() {
+        return effect;
     }
 }

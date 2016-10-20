@@ -18,7 +18,7 @@ public class ControllerSlider extends VBox {
     private SimpleObjectProperty<Slider> slider;
     private SimpleObjectProperty<Label> name;
 
-    public ControllerSlider(String name, double min, double max, double value, ChangeListener<Number> listener) {
+    public ControllerSlider(String name, double min, double max, double value) {
         this.slider = new SimpleObjectProperty<>(new Slider(min, max, value));
         this.name = new SimpleObjectProperty<>(new Label(name));
 
@@ -29,7 +29,6 @@ public class ControllerSlider extends VBox {
 
         getSlider().setEffect(shadow);
         getSlider().setPadding(padding);
-        getSlider().valueProperty().addListener(listener);
 
         setPadding(padding);
         getChildren().addAll(getNameLabel(), getSlider());

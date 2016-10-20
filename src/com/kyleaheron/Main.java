@@ -15,7 +15,6 @@ TODO: Make the application settings panel.
 TODO: Skins? Make use of.
 TODO: Static implementation of the the light object, or just the show, and output buffer to avoid sending too many commands.
 TODO: Implement the gui object container into all whom implement ieffect, test it out?
-TODO: Method for
  */
 
 public class Main extends Application  {

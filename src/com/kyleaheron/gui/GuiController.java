@@ -3,7 +3,6 @@ package com.kyleaheron.gui;
 import com.kyleaheron.HueBridge;
 import com.kyleaheron.gui.components.ControllerButton;
 import com.kyleaheron.lights.Controller;
-import com.kyleaheron.lights.IEffect;
 import com.kyleaheron.lights.EffectEnum;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
@@ -68,7 +67,7 @@ public class GuiController implements Initializable{
                     EffectEnum buttonEffect = (EffectEnum) button.getTarget();
                     if (buttonEffect.getEffectClass() == getCurrentController().getCurrentEffect().getClass()) {
                         button.setState(ControllerButton.State.SELECTED);
-                        //createEffectControlPanel((Controller.EffectEnum) button.getTarget());
+                        populateEffectControlPanel();
                     } else {
                         button.setState(ControllerButton.State.DEFAULT);
                     }
@@ -87,18 +86,20 @@ public class GuiController implements Initializable{
                 effectButtonPane.getChildren().forEach(button -> ((ControllerButton) button).setState(ControllerButton.State.DEFAULT));
                 source.setState(ControllerButton.State.SELECTED);
                 getCurrentController().setCurrentEffect(targetEffect);
-                //createEffectControlPanel(targetEffect);
+                populateEffectControlPanel();
             } else {
                 source.setState(ControllerButton.State.DEFAULT);
                 getCurrentController().setCurrentEffect(null);
-                //createEffectControlPanel(null);
+                populateEffectControlPanel();
             }
         })));
     }
 
-    private void createEffectControlPanel(IEffect effect) {
+    private void populateEffectControlPanel() {
         assert effectControlPane != null;
         effectControlPane.getChildren().clear();
+        effectControlPane.getChildren().add(getCurrentController().getCurrentEffect().getControlPane());
+
     }
 
     public HueBridge getBridge() {

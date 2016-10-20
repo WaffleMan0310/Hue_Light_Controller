@@ -1,13 +1,11 @@
 package com.kyleaheron.lights;
 
 import com.kyleaheron.HueLight;
-import com.kyleaheron.gui.IComponent;
+import com.kyleaheron.gui.components.ControllerColorPicker;
 import com.kyleaheron.gui.components.ControllerSlider;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
 
-import java.awt.*;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -21,7 +19,7 @@ public interface IEffect {
 
     ConcurrentHashMap<PropertyKey<?>, Object> getPropertyMap();
 
-    //LinkedList<? extends Pane> getPropertyGuiControlMap();
+    HBox getControlPane();
 
     void setEffect(EffectEnum effect);
 
@@ -38,9 +36,16 @@ public interface IEffect {
     default <T> void setProperty(PropertyKey<T> key, T newValue) {
         getPropertyMap().computeIfPresent(key, (keyObj, object) -> object = newValue);
     }
-    /*
+
     default <T extends Color> PropertyKey<T> createPropertyWithColorChooser(String key, Class<T> type, T value) {
-        return null;
+        ControllerColorPicker picker = new ControllerColorPicker(key, value);
+        PropertyKey<T> propertyKey = createProperty(key, type, value);
+        picker.getColorPicker().setOnAction(e -> {
+            ControllerColorPicker source = (ControllerColorPicker) e.getSource();
+            getPropertyMap().computeIfPresent(propertyKey, (pKey, object) -> object = source.getColorPicker().getValue());
+        });
+        getControlPane().getChildren().add(picker);
+        return propertyKey;
     }
 
     default <T extends Boolean> PropertyKey<T> createPropertyWithToggle(String key, Class<T> type, T value) {
@@ -51,9 +56,9 @@ public interface IEffect {
         ControllerSlider slider = new ControllerSlider(key, min.doubleValue(), max.doubleValue(), value.doubleValue());
         PropertyKey<T> propertyKey = createProperty(key, type, value);
         slider.getSlider().valueProperty().addListener(((observable, oldValue, newValue) -> getPropertyMap().computeIfPresent(propertyKey, (pKey, object) -> object = newValue)));
+        getControlPane().getChildren().add(slider);
         return propertyKey;
     }
-    */
 
     default <T> PropertyKey<T> createProperty(String key, Class<T> type, T defaultValue) {
         PropertyKey<T> propertyKey = new PropertyKey<>(key, type);

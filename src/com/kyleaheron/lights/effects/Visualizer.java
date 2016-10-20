@@ -4,6 +4,8 @@ import com.kyleaheron.HueLight;
 import com.kyleaheron.lights.IEffect;
 import com.kyleaheron.lights.EffectEnum;
 import com.kyleaheron.util.LightUtil;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import net.beadsproject.beads.analysis.featureextractors.FFT;
 import net.beadsproject.beads.analysis.featureextractors.PowerSpectrum;
 import net.beadsproject.beads.analysis.segmenters.ShortFrameSegmenter;
@@ -12,6 +14,7 @@ import net.beadsproject.beads.core.UGen;
 import net.beadsproject.beads.ugens.Gain;
 
 import java.awt.*;
+import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Visualizer implements IEffect {
@@ -20,6 +23,7 @@ public class Visualizer implements IEffect {
     private EffectEnum effect;
 
     private ConcurrentHashMap<PropertyKey<?>, Object> propertyMap = new ConcurrentHashMap<>();
+    private HBox controlPane = new HBox();
 
     public static PropertyKey<Integer> brightnessKey;
     public static PropertyKey<Integer> backgroundBrightnessKey;
@@ -39,7 +43,7 @@ public class Visualizer implements IEffect {
     private int hue;
 
     public Visualizer() {
-        brightnessKey = createProperty("brightness", Integer.class, LightUtil.MAX_BRIGHTNESS);
+        brightnessKey = createPropertyWithSlider("brightness", Integer.class, LightUtil.MIN_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS);
         backgroundBrightnessKey = createProperty("backgroundBrightness", Integer.class, LightUtil.MAX_BRIGHTNESS);
         sensitivityKey = createProperty("sensitivity", Double.class, 0.5d);
         gainKey = createProperty("gain", Double.class, 0.25d);
@@ -122,6 +126,11 @@ public class Visualizer implements IEffect {
     @Override
     public ConcurrentHashMap<PropertyKey<?>, Object> getPropertyMap() {
         return propertyMap;
+    }
+
+    @Override
+    public HBox getControlPane() {
+        return controlPane;
     }
 
     @Override

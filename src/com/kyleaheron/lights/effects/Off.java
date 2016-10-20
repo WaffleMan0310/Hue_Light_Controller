@@ -3,7 +3,10 @@ package com.kyleaheron.lights.effects;
 import com.kyleaheron.HueLight;
 import com.kyleaheron.lights.EffectEnum;
 import com.kyleaheron.lights.IEffect;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 
+import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Off implements IEffect{
@@ -12,6 +15,7 @@ public class Off implements IEffect{
     private EffectEnum effect;
 
     private ConcurrentHashMap<PropertyKey<?>, Object> propertyMap = new ConcurrentHashMap<>();
+    private HBox controlPane = new HBox();
 
     @Override
     public void setLight(HueLight light) {
@@ -33,6 +37,11 @@ public class Off implements IEffect{
     @Override
     public ConcurrentHashMap<PropertyKey<?>, Object> getPropertyMap() {
         return propertyMap;
+    }
+
+    @Override
+    public HBox getControlPane() {
+        return controlPane;
     }
 
     @Override

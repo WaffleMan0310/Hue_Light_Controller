@@ -12,7 +12,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
-public class ControllerSlider extends VBox implements IComponent {
+public class ControllerSlider extends VBox {
 
     private static final Insets padding = new Insets(5, 0, 5, 0);
     private static final DropShadow shadow = new DropShadow();
@@ -44,10 +44,5 @@ public class ControllerSlider extends VBox implements IComponent {
 
     public Label getNameLabel() {
         return this.name.get();
-    }
-
-    @Override
-    public Pane getComponent() {
-        return this;
     }
 }

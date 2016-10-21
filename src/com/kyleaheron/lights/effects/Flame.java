@@ -4,11 +4,9 @@ import com.kyleaheron.HueLight;
 import com.kyleaheron.lights.IEffect;
 import com.kyleaheron.lights.EffectEnum;
 import com.kyleaheron.util.LightUtil;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 
-import java.awt.*;
-import java.util.LinkedList;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -18,7 +16,7 @@ public class Flame implements IEffect {
     private EffectEnum effect;
 
     private ConcurrentHashMap<PropertyKey<?>, Object> propertyMap = new ConcurrentHashMap<>();
-    private HBox controlPane = new HBox();
+    private VBox controlPane = new VBox();
 
     private static final Random random = new Random();
 
@@ -29,9 +27,9 @@ public class Flame implements IEffect {
     private long startTime = System.currentTimeMillis();
 
     public Flame() {
-        brightnessKey = createPropertyWithSlider("brightness", Integer.class, LightUtil.MIN_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS);
+        brightnessKey = createPropertyWithSlider("Brightness", Integer.class, LightUtil.MIN_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS);
         turbulenceKey = createProperty("turbulence", Double.class, 0.5d);
-        colorKey = createProperty("color", Color.class, Color.RED);
+        colorKey = createPropertyWithColorChooser("Color", Color.class, Color.RED);
     }
 
     @Override
@@ -74,7 +72,7 @@ public class Flame implements IEffect {
     }
 
     @Override
-    public HBox getControlPane() {
+    public VBox getControlPane() {
         return controlPane;
     }
 

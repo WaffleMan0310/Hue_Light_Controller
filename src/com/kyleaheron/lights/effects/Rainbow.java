@@ -5,10 +5,8 @@ import com.kyleaheron.HueLight;
 import com.kyleaheron.lights.IEffect;
 import com.kyleaheron.lights.EffectEnum;
 import com.kyleaheron.util.LightUtil;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 
-import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Rainbow implements IEffect {
@@ -17,7 +15,7 @@ public class Rainbow implements IEffect {
     private EffectEnum effect;
 
     private ConcurrentHashMap<PropertyKey<?>, Object> propertyMap = new ConcurrentHashMap<>();
-    private HBox controlPane = new HBox();
+    private VBox controlPane = new VBox();
 
     public static PropertyKey<Integer> brightnessKey;
     public static PropertyKey<Integer> speedKey;
@@ -27,7 +25,7 @@ public class Rainbow implements IEffect {
     private int hue = 0;
 
     public Rainbow() {
-        brightnessKey = createPropertyWithSlider("brightness", Integer.class, LightUtil.MIN_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS);
+        brightnessKey = createPropertyWithSlider("Brightness", Integer.class, LightUtil.MIN_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS);
         speedKey = createProperty("speed", Integer.class, 2000);
         resolutionKey = createProperty("resolution", Integer.class, 3);
         flashingKey = createProperty("flashing", Boolean.class, false);
@@ -70,7 +68,7 @@ public class Rainbow implements IEffect {
     }
 
     @Override
-    public HBox getControlPane() {
+    public VBox getControlPane() {
         return controlPane;
     }
 

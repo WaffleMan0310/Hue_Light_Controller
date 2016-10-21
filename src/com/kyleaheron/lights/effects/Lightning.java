@@ -4,11 +4,9 @@ import com.kyleaheron.HueLight;
 import com.kyleaheron.lights.IEffect;
 import com.kyleaheron.lights.EffectEnum;
 import com.kyleaheron.util.LightUtil;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 
-import java.awt.*;
-import java.util.LinkedList;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -18,7 +16,7 @@ public class Lightning implements IEffect {
     private EffectEnum effect;
 
     private ConcurrentHashMap<PropertyKey<?>, Object> propertyMap = new ConcurrentHashMap<>();
-    private HBox controlPane = new HBox();
+    private VBox controlPane = new VBox();
 
     public static final Random random = new Random();
 
@@ -32,8 +30,8 @@ public class Lightning implements IEffect {
     private long startTime = System.currentTimeMillis();
 
     public Lightning() {
-        brightnessKey = createPropertyWithSlider("brightness", Integer.class, LightUtil.MIN_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS);
-        colorKey = createProperty("color", Color.class, Color.WHITE);
+        brightnessKey = createPropertyWithSlider("Brightness", Integer.class, LightUtil.MIN_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS);
+        colorKey = createPropertyWithColorChooser("Color", Color.class, Color.WHITE);
     }
 
     @Override
@@ -79,7 +77,7 @@ public class Lightning implements IEffect {
     }
 
     @Override
-    public HBox getControlPane() {
+    public VBox getControlPane() {
         return controlPane;
     }
 

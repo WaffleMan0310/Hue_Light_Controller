@@ -4,11 +4,9 @@ import com.kyleaheron.HueLight;
 import com.kyleaheron.lights.IEffect;
 import com.kyleaheron.lights.EffectEnum;
 import com.kyleaheron.util.LightUtil;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 
-import java.awt.*;
-import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Sequence implements IEffect {
@@ -17,7 +15,7 @@ public class Sequence implements IEffect {
     private EffectEnum effect;
 
     private ConcurrentHashMap<PropertyKey<?>, Object> propertyMap = new ConcurrentHashMap<>();
-    private HBox controlPane = new HBox();
+    private VBox controlPane = new VBox();
 
     public static PropertyKey<Integer> brightnessKey;
     public static PropertyKey<Color[]> sequenceKey;
@@ -25,10 +23,10 @@ public class Sequence implements IEffect {
     public static PropertyKey<Integer> intervalKey;
 
     public Sequence() {
-        brightnessKey = createPropertyWithSlider("brightness", Integer.class, LightUtil.MIN_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS);
-        sequenceKey = createProperty("sequence", Color[].class, new Color[]{Color.RED});
-        speedKey = createProperty("speed", Integer.class, 2000);
-        intervalKey = createProperty("interval", Integer.class, 2000);
+        brightnessKey = createPropertyWithSlider("Brightness", Integer.class, LightUtil.MIN_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS);
+        sequenceKey = createProperty("Sequence", Color[].class, new Color[]{Color.RED});
+        speedKey = createProperty("Speed", Integer.class, 2000);
+        intervalKey = createProperty("Interval", Integer.class, 2000);
     }
 
     @Override
@@ -64,7 +62,7 @@ public class Sequence implements IEffect {
     }
 
     @Override
-    public HBox getControlPane() {
+    public VBox getControlPane() {
         return controlPane;
     }
 

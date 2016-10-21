@@ -3,7 +3,8 @@ package com.kyleaheron.lights;
 import com.kyleaheron.HueLight;
 import com.kyleaheron.gui.components.ControllerColorPicker;
 import com.kyleaheron.gui.components.ControllerSlider;
-import javafx.scene.layout.HBox;
+import javafx.scene.control.ColorPicker;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
 import java.util.Objects;
@@ -19,7 +20,7 @@ public interface IEffect {
 
     ConcurrentHashMap<PropertyKey<?>, Object> getPropertyMap();
 
-    HBox getControlPane();
+    VBox getControlPane();
 
     void setEffect(EffectEnum effect);
 
@@ -41,8 +42,8 @@ public interface IEffect {
         ControllerColorPicker picker = new ControllerColorPicker(key, value);
         PropertyKey<T> propertyKey = createProperty(key, type, value);
         picker.getColorPicker().setOnAction(e -> {
-            ControllerColorPicker source = (ControllerColorPicker) e.getSource();
-            getPropertyMap().computeIfPresent(propertyKey, (pKey, object) -> object = source.getColorPicker().getValue());
+            ColorPicker source = (ColorPicker) e.getSource();
+            getPropertyMap().computeIfPresent(propertyKey, (pKey, object) -> object = source.getValue());
         });
         getControlPane().getChildren().add(picker);
         return propertyKey;
@@ -55,7 +56,7 @@ public interface IEffect {
     default <T extends Number> PropertyKey<T> createPropertyWithSlider(String key, Class<T> type, T min, T max, T value) {
         ControllerSlider slider = new ControllerSlider(key, min.doubleValue(), max.doubleValue(), value.doubleValue());
         PropertyKey<T> propertyKey = createProperty(key, type, value);
-        slider.getSlider().valueProperty().addListener(((observable, oldValue, newValue) -> getPropertyMap().computeIfPresent(propertyKey, (pKey, object) -> object = newValue)));
+        slider.getSlider().valueProperty().addListener(((observable, oldValue, newValue) -> setProperty(propertyKey, propertyKey.type.equals(Integer.class) ? propertyKey.type.cast(newValue.intValue()) : propertyKey.type.cast(newValue))));
         getControlPane().getChildren().add(slider);
         return propertyKey;
     }

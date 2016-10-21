@@ -4,12 +4,9 @@ import com.kyleaheron.HueLight;
 import com.kyleaheron.lights.IEffect;
 import com.kyleaheron.lights.EffectEnum;
 import com.kyleaheron.util.LightUtil;
-import com.sun.javafx.font.freetype.HBGlyphLayout;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 
-import java.awt.*;
-import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Breathing implements IEffect {
@@ -18,7 +15,7 @@ public class Breathing implements IEffect {
     private EffectEnum effect;
 
     private ConcurrentHashMap<PropertyKey<?>, Object> propertyMap = new ConcurrentHashMap<>();
-    private HBox controlPane = new HBox();
+    private VBox controlPane = new VBox();
 
     public static PropertyKey<Integer> brightnessKey;
     public static PropertyKey<Integer> speedKey;
@@ -27,9 +24,9 @@ public class Breathing implements IEffect {
     private int state = 0;
 
     public Breathing() {
-        createPropertyWithSlider("brightness", Integer.class, LightUtil.MIN_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS);
+        createPropertyWithSlider("Brightness", Integer.class, LightUtil.MIN_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS);
         createProperty("speed", Integer.class, 2000);
-        createProperty("color", Color.class, Color.RED);
+        createPropertyWithColorChooser("Color", Color.class, Color.RED);
     }
 
     @Override
@@ -74,7 +71,7 @@ public class Breathing implements IEffect {
     }
 
     @Override
-    public HBox getControlPane() {
+    public VBox getControlPane() {
         return controlPane;
     }
 

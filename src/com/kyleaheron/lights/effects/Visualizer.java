@@ -4,8 +4,8 @@ import com.kyleaheron.HueLight;
 import com.kyleaheron.lights.IEffect;
 import com.kyleaheron.lights.EffectEnum;
 import com.kyleaheron.util.LightUtil;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import net.beadsproject.beads.analysis.featureextractors.FFT;
 import net.beadsproject.beads.analysis.featureextractors.PowerSpectrum;
 import net.beadsproject.beads.analysis.segmenters.ShortFrameSegmenter;
@@ -13,8 +13,6 @@ import net.beadsproject.beads.core.AudioContext;
 import net.beadsproject.beads.core.UGen;
 import net.beadsproject.beads.ugens.Gain;
 
-import java.awt.*;
-import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Visualizer implements IEffect {
@@ -23,7 +21,7 @@ public class Visualizer implements IEffect {
     private EffectEnum effect;
 
     private ConcurrentHashMap<PropertyKey<?>, Object> propertyMap = new ConcurrentHashMap<>();
-    private HBox controlPane = new HBox();
+    private VBox controlPane = new VBox();
 
     public static PropertyKey<Integer> brightnessKey;
     public static PropertyKey<Integer> backgroundBrightnessKey;
@@ -43,13 +41,13 @@ public class Visualizer implements IEffect {
     private int hue;
 
     public Visualizer() {
-        brightnessKey = createPropertyWithSlider("brightness", Integer.class, LightUtil.MIN_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS);
-        backgroundBrightnessKey = createProperty("backgroundBrightness", Integer.class, LightUtil.MAX_BRIGHTNESS);
-        sensitivityKey = createProperty("sensitivity", Double.class, 0.5d);
-        gainKey = createProperty("gain", Double.class, 0.25d);
-        rainbowKey = createProperty("rainbow", Boolean.class, true);
-        colorKey = createProperty("color", Color.class, Color.RED);
-        backgroundColorKey = createProperty("backgroundColor", Color.class, Color.ORANGE);
+        brightnessKey = createPropertyWithSlider("Brghtness", Integer.class, LightUtil.MIN_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS);
+        backgroundBrightnessKey = createPropertyWithSlider("Background Brightness", Integer.class, LightUtil.MIN_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS);
+        sensitivityKey = createPropertyWithSlider("Sensitivity", Double.class, 0.0d, 1.0d, 0.5d);
+        gainKey = createPropertyWithSlider("Gain", Double.class, 0.0d, 1.0d, 0.25d);
+        rainbowKey = createProperty("Rainbow", Boolean.class, true);
+        colorKey = createPropertyWithColorChooser("Color", Color.class, Color.RED);
+        backgroundColorKey = createPropertyWithColorChooser("Background Color", Color.class, Color.ORANGE);
 
         masterGain.addInput(stereoMixInput);
         segmenter.addInput(stereoMixInput);
@@ -129,7 +127,7 @@ public class Visualizer implements IEffect {
     }
 
     @Override
-    public HBox getControlPane() {
+    public VBox getControlPane() {
         return controlPane;
     }
 

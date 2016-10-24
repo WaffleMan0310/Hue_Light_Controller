@@ -41,11 +41,11 @@ public class Visualizer implements IEffect {
     private int hue;
 
     public Visualizer() {
+        rainbowKey = createPropertyWithToggle("Rainbow", Boolean.class, Boolean.FALSE);
         brightnessKey = createPropertyWithSlider("Brghtness", Integer.class, LightUtil.MIN_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS);
         backgroundBrightnessKey = createPropertyWithSlider("Background Brightness", Integer.class, LightUtil.MIN_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS);
         sensitivityKey = createPropertyWithSlider("Sensitivity", Double.class, 0.0d, 1.0d, 0.5d);
         gainKey = createPropertyWithSlider("Gain", Double.class, 0.0d, 1.0d, 0.25d);
-        rainbowKey = createProperty("Rainbow", Boolean.class, false);
         colorKey = createPropertyWithColorChooser("Color", Color.class, Color.BLUE);
         backgroundColorKey = createPropertyWithColorChooser("Background Color", Color.class, Color.CYAN);
 

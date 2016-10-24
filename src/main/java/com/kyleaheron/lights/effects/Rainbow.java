@@ -28,7 +28,7 @@ public class Rainbow implements IEffect {
         brightnessKey = createPropertyWithSlider("Brightness", Integer.class, LightUtil.MIN_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS);
         speedKey = createProperty("speed", Integer.class, 2000);
         resolutionKey = createProperty("resolution", Integer.class, 3);
-        flashingKey = createProperty("flashing", Boolean.class, false);
+        flashingKey = createPropertyWithToggle("flashing", Boolean.class, Boolean.FALSE);
     }
 
     @Override

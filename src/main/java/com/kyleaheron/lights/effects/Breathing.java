@@ -33,8 +33,9 @@ public class Breathing implements IEffect {
                 getLight()
                         .setOn(true)
                         .setBrightness((int)(getProperty(colorKey).getBrightness() * 254))
+                        .setHue((int)((getProperty(colorKey).getHue() * 65535) / 360))
+                        .setSaturation((int)(getProperty(colorKey).getSaturation() * 254))
                         .setTransitionTime(getProperty(speedKey))
-                        .setColor(getProperty(colorKey))
                         .show();
                 Thread.sleep(getProperty(speedKey) - 80);
                 state++;

@@ -6,6 +6,7 @@ import main.java.com.kyleaheron.gui.components.ControllerColorPicker;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import main.java.com.kyleaheron.gui.components.ControllerToggle;
 
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -50,7 +51,11 @@ public interface IEffect {
     }
 
     default <T extends Boolean> PropertyKey<T> createPropertyWithToggle(String key, Class<T> type, T value) {
-        return null;
+        ControllerToggle toggle = new ControllerToggle(key);
+        PropertyKey<T> propertyKey = createProperty(key, type, value);
+        toggle.getToggle().selectedProperty().addListener(((observable, oldValue, newValue) -> setProperty(propertyKey, propertyKey.type.cast(newValue))));
+        getControlPane().getChildren().add(toggle);
+        return propertyKey;
     }
 
     default <T extends Number> PropertyKey<T> createPropertyWithSlider(String key, Class<T> type, T min, T max, T value) {

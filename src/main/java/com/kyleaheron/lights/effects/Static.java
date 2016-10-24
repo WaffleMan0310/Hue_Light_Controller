@@ -27,7 +27,8 @@ public class Static implements IEffect {
         getLight()
                 .setOn(true)
                 .setBrightness((int)(getProperty(colorKey).getBrightness() * 254))
-                .setColor(getProperty(colorKey)) // Color Selector
+                .setHue((int)((getProperty(colorKey).getHue() * 65535) / 360))
+                .setSaturation((int)(getProperty(colorKey).getSaturation() * 254))
                 .show();
     }
 

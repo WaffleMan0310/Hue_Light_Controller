@@ -1,5 +1,7 @@
 package main.java.com.kyleaheron.gui.components;
 
+import javafx.scene.layout.*;
+import javafx.scene.shape.Rectangle;
 import main.java.com.kyleaheron.gui.GuiController;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
@@ -7,18 +9,14 @@ import javafx.geometry.Pos;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
-public class ControllerColorPicker extends VBox{
+public class ControllerColorPicker extends HBox{
 
     private static final Background background = new Background(new BackgroundFill(Color.WHITE, new CornerRadii(7), Insets.EMPTY));
 
     private static DropShadow shadow = new DropShadow();
-    private static Insets padding = new Insets(5, 0, 5, 0);
+    private static Insets padding = new Insets(5, 5, 5, 5);
 
     private SimpleObjectProperty<ColorPicker> colorPicker;
     private SimpleObjectProperty<Label> name;
@@ -31,12 +29,12 @@ public class ControllerColorPicker extends VBox{
         getNameLabel().setEffect(shadow);
         getNameLabel().setTextFill(Color.WHITE);
         getNameLabel().setLabelFor(getColorPicker());
+        getNameLabel().setPadding(padding);
 
         getColorPicker().setEffect(shadow);
         getColorPicker().setPadding(padding);
         getColorPicker().setBackground(background);
-        getColorPicker().getStyleClass().add("button");
-        getColorPicker().setPrefWidth(50);
+        getColorPicker().getStyleClass().add("splid-button");
         getColorPicker().setStyle("-fx-color-label-visible: false;");
 
         setAlignment(Pos.CENTER_LEFT);

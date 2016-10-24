@@ -38,8 +38,9 @@ public class Lightning implements IEffect {
                 for (int strike = 0; strike < random.nextInt(lightningMaxStrikes); strike++) {
                     getLight()
                             .setOn(true)
-                            .setBrightness((int)(getProperty(colorKey).getBrightness()))
-                            .setColor(getProperty(colorKey))
+                            .setBrightness((int)(getProperty(colorKey).getBrightness() * 254))
+                            .setHue((int)((getProperty(colorKey).getHue() * 65535) / 360))
+                            .setSaturation((int)(getProperty(colorKey).getSaturation() * 254))
                             .setTransitionTime(0)
                             .show();
                     Thread.sleep(random.nextInt(lightningMaxStrikeLengthMs));

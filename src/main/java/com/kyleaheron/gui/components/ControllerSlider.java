@@ -12,7 +12,7 @@ import javafx.scene.paint.Color;
 
 public class ControllerSlider extends VBox {
 
-    private static final Insets padding = new Insets(5, 0, 5, 0);
+    private static final Insets padding = new Insets(5, 5, 5, 5);
     private static final DropShadow shadow = new DropShadow();
 
     private SimpleObjectProperty<Slider> slider;
@@ -26,6 +26,7 @@ public class ControllerSlider extends VBox {
         getNameLabel().setEffect(shadow);
         getNameLabel().setTextFill(Color.WHITE);
         getNameLabel().setLabelFor(getSlider());
+        getNameLabel().setPadding(padding);
 
         getSlider().setEffect(shadow);
         getSlider().setPadding(padding);

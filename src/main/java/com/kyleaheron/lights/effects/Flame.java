@@ -36,16 +36,18 @@ public class Flame implements IEffect {
                 getLight()
                         .setOn(true)
                         .setBrightness((int)(getProperty(colorKey).getBrightness() * 254) - (int) (random.nextFloat() * (int)(getProperty(colorKey).getBrightness() * 254) / 2.5f))
+                        .setHue((int)((getProperty(colorKey).getHue() * 65535) / 360))
+                        .setSaturation((int)(getProperty(colorKey).getSaturation() * 254))
                         .setTransitionTime(200)
-                        .setColor(getProperty(colorKey))
                         .show();
                 startTime = System.currentTimeMillis();
             } else {
                 getLight()
                         .setOn(true)
                         .setBrightness((int)(getProperty(colorKey).getBrightness() * 254))
+                        .setHue((int)((getProperty(colorKey).getHue() * 65535) / 360))
+                        .setSaturation((int)(getProperty(colorKey).getSaturation() * 254))
                         .setTransitionTime(200)
-                        .setColor(getProperty(colorKey))
                         .show();
             }
         } catch (Exception e) {

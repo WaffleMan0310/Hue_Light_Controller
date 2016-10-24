@@ -1,11 +1,13 @@
-package com.kyleaheron;
+package main.java.com.kyleaheron;
 
-import com.kyleaheron.gui.GuiController;
+import main.java.com.kyleaheron.gui.GuiController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+
+import java.net.URL;
 
 /*
 TODO: Review all previous code, including the api, and replace ifs with assertions if applicable.

@@ -1,12 +1,13 @@
-package com.kyleaheron.gui;
+package main.java.com.kyleaheron.gui;
 
 import com.kyleaheron.HueBridge;
-import com.kyleaheron.gui.components.ControllerButton;
-import com.kyleaheron.lights.Controller;
-import com.kyleaheron.lights.EffectEnum;
+import main.java.com.kyleaheron.gui.components.ControllerButton;
+import main.java.com.kyleaheron.lights.Controller;
+import main.java.com.kyleaheron.lights.EffectEnum;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
@@ -19,7 +20,7 @@ import java.util.ResourceBundle;
 public class GuiController implements Initializable{
 
     public static final Font font = new Font("TypoGraphica", 20);
-    final static Background background = new Background(new BackgroundImage(new Image("textures/blurredlights.jpg", 1500, 1000, true, true), null, null, null, null));
+    final static Background background = new Background(new BackgroundImage(new Image("main/resources/com/kyleaheron/textures/blurredlights.jpg", 1500, 1000, true, true), null, null, null, null));
 
     private SimpleObjectProperty<HueBridge> bridge;
     private SimpleObjectProperty<Controller> currentController;
@@ -55,6 +56,7 @@ public class GuiController implements Initializable{
         assert mainPane != null;
         mainPane.setBackground(background);
         assert lightButtonPane != null && getBridge() != null;
+        lightButtonPane.setAlignment(Pos.CENTER_LEFT);
         getBridge().getLights().forEach(light -> lightButtonPane.getChildren().add(new ControllerButton(new Controller(light), light.getName(), e -> {
             ControllerButton source = (ControllerButton) e.getSource();
             Controller targetController = (Controller) source.getTarget();
@@ -76,21 +78,23 @@ public class GuiController implements Initializable{
                 source.setState(ControllerButton.State.DEFAULT);
                 setCurrentController(null);
             }
-
         })));
         assert effectButtonPane != null;
+        effectButtonPane.setAlignment(Pos.CENTER_LEFT);
         Arrays.stream(EffectEnum.values()).forEach(effect -> effectButtonPane.getChildren().add(new ControllerButton(effect, effect.getEffectName(), e -> {
             ControllerButton source = (ControllerButton) e.getSource();
             EffectEnum targetEffect = (EffectEnum) source.getTarget();
-            if (targetEffect.getEffectClass() != getCurrentController().getCurrentEffect().getClass()) {
-                effectButtonPane.getChildren().forEach(button -> ((ControllerButton) button).setState(ControllerButton.State.DEFAULT));
-                source.setState(ControllerButton.State.SELECTED);
-                getCurrentController().setCurrentEffect(targetEffect);
-                populateEffectControlPanel();
-            } else {
-                source.setState(ControllerButton.State.DEFAULT);
-                getCurrentController().setCurrentEffect(null);
-                populateEffectControlPanel();
+            if (getCurrentController() != null) {
+                if (targetEffect.getEffectClass() != getCurrentController().getCurrentEffect().getClass()) {
+                    effectButtonPane.getChildren().forEach(button -> ((ControllerButton) button).setState(ControllerButton.State.DEFAULT));
+                    source.setState(ControllerButton.State.SELECTED);
+                    getCurrentController().setCurrentEffect(targetEffect);
+                    populateEffectControlPanel();
+                } else {
+                    source.setState(ControllerButton.State.DEFAULT);
+                    getCurrentController().setCurrentEffect(null);
+                    populateEffectControlPanel();
+                }
             }
         })));
     }
@@ -98,8 +102,8 @@ public class GuiController implements Initializable{
     private void populateEffectControlPanel() {
         assert effectControlPane != null;
         effectControlPane.getChildren().clear();
+        effectControlPane.setAlignment(Pos.CENTER_LEFT);
         effectControlPane.getChildren().add(getCurrentController().getCurrentEffect().getControlPane());
-
     }
 
     public HueBridge getBridge() {

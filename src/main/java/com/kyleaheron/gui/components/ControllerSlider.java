@@ -1,14 +1,12 @@
-package com.kyleaheron.gui.components;
+package main.java.com.kyleaheron.gui.components;
 
-import com.kyleaheron.gui.GuiController;
-import com.kyleaheron.gui.IComponent;
+import main.java.com.kyleaheron.gui.GuiController;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.effect.DropShadow;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
@@ -32,6 +30,7 @@ public class ControllerSlider extends VBox {
         getSlider().setEffect(shadow);
         getSlider().setPadding(padding);
 
+        setAlignment(Pos.CENTER_LEFT);
         setPadding(padding);
         getChildren().addAll(getNameLabel(), getSlider());
         setVisible(true);

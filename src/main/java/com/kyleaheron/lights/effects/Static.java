@@ -1,10 +1,8 @@
-package com.kyleaheron.lights.effects;
+package main.java.com.kyleaheron.lights.effects;
 
 import com.kyleaheron.HueLight;
-import com.kyleaheron.lights.IEffect;
-import com.kyleaheron.lights.EffectEnum;
-import com.kyleaheron.util.LightUtil;
-import javafx.scene.chart.NumberAxis;
+import main.java.com.kyleaheron.lights.EffectEnum;
+import main.java.com.kyleaheron.lights.IEffect;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
@@ -18,11 +16,9 @@ public class Static implements IEffect {
     private ConcurrentHashMap<PropertyKey<?>, Object> propertyMap = new ConcurrentHashMap<>();
     private VBox controlPane = new VBox();
 
-    public static PropertyKey<Integer> brightnessKey;
     public static PropertyKey<Color> colorKey;
 
     public Static() {
-        brightnessKey = createPropertyWithSlider("Brightness", Integer.class, LightUtil.MIN_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS);
         colorKey = createPropertyWithColorChooser("Color", Color.class, Color.RED);
     }
 
@@ -30,7 +26,7 @@ public class Static implements IEffect {
     public void show() {
         getLight()
                 .setOn(true)
-                .setBrightness(getProperty(brightnessKey))
+                .setBrightness((int)(getProperty(colorKey).getBrightness() * 254))
                 .setColor(getProperty(colorKey)) // Color Selector
                 .show();
     }

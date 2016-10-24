@@ -1,13 +1,13 @@
-package com.kyleaheron.lights.effects;
+package main.java.com.kyleaheron.lights.effects;
 
 import com.kyleaheron.HueLight;
-import com.kyleaheron.lights.EffectEnum;
-import com.kyleaheron.lights.IEffect;
+import main.java.com.kyleaheron.lights.IEffect;
+import main.java.com.kyleaheron.lights.EffectEnum;
 import javafx.scene.layout.VBox;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Off implements IEffect{
+public class Off implements IEffect {
 
     private HueLight light;
     private EffectEnum effect;

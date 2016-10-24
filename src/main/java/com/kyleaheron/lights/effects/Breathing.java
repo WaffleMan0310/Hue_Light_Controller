@@ -1,16 +1,14 @@
-package com.kyleaheron.lights.effects;
+package main.java.com.kyleaheron.lights.effects;
 
 import com.kyleaheron.HueLight;
-import com.kyleaheron.lights.IEffect;
-import com.kyleaheron.lights.EffectEnum;
-import com.kyleaheron.util.LightUtil;
+import main.java.com.kyleaheron.lights.IEffect;
+import main.java.com.kyleaheron.lights.EffectEnum;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
-import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Flame implements IEffect {
+public class Breathing implements IEffect {
 
     private HueLight light;
     private EffectEnum effect;
@@ -18,38 +16,36 @@ public class Flame implements IEffect {
     private ConcurrentHashMap<PropertyKey<?>, Object> propertyMap = new ConcurrentHashMap<>();
     private VBox controlPane = new VBox();
 
-    private static final Random random = new Random();
-
-    public static PropertyKey<Integer> brightnessKey;
-    public static PropertyKey<Double> turbulenceKey;
+    public static PropertyKey<Integer> speedKey;
     public static PropertyKey<Color> colorKey;
 
-    private long startTime = System.currentTimeMillis();
+    private int state = 0;
 
-    public Flame() {
-        brightnessKey = createPropertyWithSlider("Brightness", Integer.class, LightUtil.MIN_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS);
-        turbulenceKey = createProperty("turbulence", Double.class, 0.5d);
-        colorKey = createPropertyWithColorChooser("Color", Color.class, Color.RED);
+    public Breathing() {
+        createProperty("speed", Integer.class, 2000);
+        createPropertyWithColorChooser("Color", Color.class, Color.RED);
     }
 
     @Override
     public void show() {
         try {
-            if (System.currentTimeMillis() - startTime > random.nextFloat() * 1000) {
+            if (state == 0) {
                 getLight()
                         .setOn(true)
-                        .setBrightness(getProperty(brightnessKey) - (int) (random.nextFloat() * (getProperty(brightnessKey) / 2.5f)))
-                        .setTransitionTime(200)
+                        .setBrightness((int)(getProperty(colorKey).getBrightness() * 254))
+                        .setTransitionTime(getProperty(speedKey))
                         .setColor(getProperty(colorKey))
                         .show();
-                startTime = System.currentTimeMillis();
+                Thread.sleep(getProperty(speedKey) - 80);
+                state++;
             } else {
                 getLight()
                         .setOn(true)
-                        .setBrightness(getProperty(brightnessKey))
-                        .setTransitionTime(200)
-                        .setColor(getProperty(colorKey))
+                        .setTransitionTime(getProperty(speedKey))
+                        .setBrightness(0)
                         .show();
+                Thread.sleep(getProperty(speedKey) - 80);
+                state = 0;
             }
         } catch (Exception e) {
             e.printStackTrace();

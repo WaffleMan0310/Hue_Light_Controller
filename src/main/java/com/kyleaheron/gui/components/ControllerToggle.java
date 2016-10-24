@@ -1,4 +1,4 @@
-package com.kyleaheron.gui.components;
+package main.java.com.kyleaheron.gui.components;
 
 import javafx.scene.control.ToggleButton;
 

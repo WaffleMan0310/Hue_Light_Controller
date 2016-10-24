@@ -1,48 +1,54 @@
-package com.kyleaheron.lights.effects;
+package main.java.com.kyleaheron.lights.effects;
+
 
 import com.kyleaheron.HueLight;
-import com.kyleaheron.lights.IEffect;
-import com.kyleaheron.lights.EffectEnum;
-import com.kyleaheron.util.LightUtil;
+import main.java.com.kyleaheron.lights.IEffect;
+import main.java.com.kyleaheron.util.LightUtil;
+import main.java.com.kyleaheron.lights.EffectEnum;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Sequence implements IEffect {
+public class Rainbow implements IEffect {
 
-    private HueLight light;
+    private volatile HueLight light;
     private EffectEnum effect;
 
     private ConcurrentHashMap<PropertyKey<?>, Object> propertyMap = new ConcurrentHashMap<>();
     private VBox controlPane = new VBox();
 
     public static PropertyKey<Integer> brightnessKey;
-    public static PropertyKey<Color[]> sequenceKey;
     public static PropertyKey<Integer> speedKey;
-    public static PropertyKey<Integer> intervalKey;
+    public static PropertyKey<Integer> resolutionKey;
+    public static PropertyKey<Boolean> flashingKey;
 
-    public Sequence() {
+    private int hue = 0;
+
+    public Rainbow() {
         brightnessKey = createPropertyWithSlider("Brightness", Integer.class, LightUtil.MIN_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS);
-        sequenceKey = createProperty("Sequence", Color[].class, new Color[]{Color.RED});
-        speedKey = createProperty("Speed", Integer.class, 2000);
-        intervalKey = createProperty("Interval", Integer.class, 2000);
+        speedKey = createProperty("speed", Integer.class, 2000);
+        resolutionKey = createProperty("resolution", Integer.class, 3);
+        flashingKey = createProperty("flashing", Boolean.class, false);
     }
 
     @Override
     public void show() {
         try {
-            for (Color color : getProperty(sequenceKey)) {
-                getLight()
-                        .setOn(true)
-                        .setBrightness(getProperty(brightnessKey))
-                        .setColor(color)
-                        .setTransitionTime(getProperty(speedKey))
-                        .show();
-                Thread.sleep(getProperty(intervalKey));
-            }
+            getLight()
+                    .setOn(true)
+                    .setBrightness(getProperty(brightnessKey))
+                    .setTransitionTime(!getProperty(flashingKey) ? getProperty(speedKey) : 0)
+                    .setHue(this.hue)
+                    .show();
+            Thread.sleep(getProperty(speedKey));
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            if (this.hue > 65535) {
+                this.hue = 0;
+            } else {
+                this.hue += (13107 / getProperty(resolutionKey));
+            }
         }
     }
 

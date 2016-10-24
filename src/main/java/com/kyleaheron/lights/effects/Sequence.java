@@ -1,15 +1,14 @@
-package com.kyleaheron.lights.effects;
+package main.java.com.kyleaheron.lights.effects;
 
 import com.kyleaheron.HueLight;
-import com.kyleaheron.lights.IEffect;
-import com.kyleaheron.lights.EffectEnum;
-import com.kyleaheron.util.LightUtil;
+import main.java.com.kyleaheron.lights.IEffect;
+import main.java.com.kyleaheron.lights.EffectEnum;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Breathing implements IEffect {
+public class Sequence implements IEffect {
 
     private HueLight light;
     private EffectEnum effect;
@@ -17,38 +16,27 @@ public class Breathing implements IEffect {
     private ConcurrentHashMap<PropertyKey<?>, Object> propertyMap = new ConcurrentHashMap<>();
     private VBox controlPane = new VBox();
 
-    public static PropertyKey<Integer> brightnessKey;
+    public static PropertyKey<Color[]> sequenceKey;
     public static PropertyKey<Integer> speedKey;
-    public static PropertyKey<Color> colorKey;
+    public static PropertyKey<Integer> intervalKey;
 
-    private int state = 0;
-
-    public Breathing() {
-        createPropertyWithSlider("Brightness", Integer.class, LightUtil.MIN_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS);
-        createProperty("speed", Integer.class, 2000);
-        createPropertyWithColorChooser("Color", Color.class, Color.RED);
+    public Sequence() {
+        sequenceKey = createProperty("Sequence", Color[].class, new Color[]{Color.RED});
+        speedKey = createProperty("Speed", Integer.class, 2000);
+        intervalKey = createProperty("Interval", Integer.class, 2000);
     }
 
     @Override
     public void show() {
         try {
-            if (state == 0) {
+            for (Color color : getProperty(sequenceKey)) {
                 getLight()
                         .setOn(true)
-                        .setBrightness(getProperty(brightnessKey))
+                        .setBrightness((int)(color.getBrightness() * 254))
+                        .setColor(color)
                         .setTransitionTime(getProperty(speedKey))
-                        .setColor(getProperty(colorKey))
                         .show();
-                Thread.sleep(getProperty(speedKey) - 80);
-                state++;
-            } else {
-                getLight()
-                        .setOn(true)
-                        .setTransitionTime(getProperty(speedKey))
-                        .setBrightness(0)
-                        .show();
-                Thread.sleep(getProperty(speedKey) - 80);
-                state = 0;
+                Thread.sleep(getProperty(intervalKey));
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -1,4 +1,4 @@
-package com.kyleaheron.lights;
+package main.java.com.kyleaheron.lights;
 
 import com.kyleaheron.HueLight;
 

@@ -1,8 +1,8 @@
-package com.kyleaheron.lights;
+package main.java.com.kyleaheron.lights;
 
 import com.kyleaheron.HueLight;
-import com.kyleaheron.gui.components.ControllerColorPicker;
-import com.kyleaheron.gui.components.ControllerSlider;
+import main.java.com.kyleaheron.gui.components.ControllerSlider;
+import main.java.com.kyleaheron.gui.components.ControllerColorPicker;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;

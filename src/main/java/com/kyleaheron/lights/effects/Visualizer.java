@@ -1,9 +1,9 @@
-package com.kyleaheron.lights.effects;
+package main.java.com.kyleaheron.lights.effects;
 
 import com.kyleaheron.HueLight;
-import com.kyleaheron.lights.IEffect;
-import com.kyleaheron.lights.EffectEnum;
-import com.kyleaheron.util.LightUtil;
+import main.java.com.kyleaheron.lights.EffectEnum;
+import main.java.com.kyleaheron.lights.IEffect;
+import main.java.com.kyleaheron.util.LightUtil;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import net.beadsproject.beads.analysis.featureextractors.FFT;
@@ -45,9 +45,9 @@ public class Visualizer implements IEffect {
         backgroundBrightnessKey = createPropertyWithSlider("Background Brightness", Integer.class, LightUtil.MIN_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS);
         sensitivityKey = createPropertyWithSlider("Sensitivity", Double.class, 0.0d, 1.0d, 0.5d);
         gainKey = createPropertyWithSlider("Gain", Double.class, 0.0d, 1.0d, 0.25d);
-        rainbowKey = createProperty("Rainbow", Boolean.class, true);
-        colorKey = createPropertyWithColorChooser("Color", Color.class, Color.RED);
-        backgroundColorKey = createPropertyWithColorChooser("Background Color", Color.class, Color.ORANGE);
+        rainbowKey = createProperty("Rainbow", Boolean.class, false);
+        colorKey = createPropertyWithColorChooser("Color", Color.class, Color.BLUE);
+        backgroundColorKey = createPropertyWithColorChooser("Background Color", Color.class, Color.CYAN);
 
         masterGain.addInput(stereoMixInput);
         segmenter.addInput(stereoMixInput);
@@ -58,12 +58,10 @@ public class Visualizer implements IEffect {
 
     @Override
     public void show() {
-        if (!audioContext.isRunning()) {
-            audioContext.start();
-        }
-        if (getProperty(gainKey) != masterGain.getGain()) {
-            masterGain.setGain(getProperty(gainKey).floatValue());
-        }
+        if (!audioContext.isRunning())
+        audioContext.start();
+        if (getProperty(gainKey) != masterGain.getGain())
+        masterGain.setGain(getProperty(gainKey).floatValue());
         float[] features = powerSpectrum.getFeatures();
         if (features != null) {
             if (features[0] > 500 * (1 / getProperty(sensitivityKey)) || features[1] > 350 * (1 / getProperty(sensitivityKey)) || features[2] > 200 * (1 / getProperty(sensitivityKey))) {
@@ -84,7 +82,7 @@ public class Visualizer implements IEffect {
                             .setOn(true)
                             .setBrightness(getProperty(brightnessKey))
                             .setColor(getProperty(colorKey))
-                            .setTransitionTime(0)
+                            .setTransitionTime(100)
                             .show();
                 }
             } else {
@@ -98,7 +96,7 @@ public class Visualizer implements IEffect {
                             .setOn(true)
                             .setBrightness(getProperty(backgroundBrightnessKey))
                             .setColor(getProperty(backgroundColorKey))
-                            .setTransitionTime(0)
+                            .setTransitionTime(100)
                             .show();
                 }
             }

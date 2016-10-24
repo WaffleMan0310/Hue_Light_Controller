@@ -1,4 +1,4 @@
-package com.kyleaheron.gui;
+package main.java.com.kyleaheron.gui;
 
 import javafx.scene.layout.Pane;
 

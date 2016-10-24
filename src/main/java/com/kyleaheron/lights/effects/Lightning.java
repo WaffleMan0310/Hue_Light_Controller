@@ -1,9 +1,8 @@
-package com.kyleaheron.lights.effects;
+package main.java.com.kyleaheron.lights.effects;
 
 import com.kyleaheron.HueLight;
-import com.kyleaheron.lights.IEffect;
-import com.kyleaheron.lights.EffectEnum;
-import com.kyleaheron.util.LightUtil;
+import main.java.com.kyleaheron.lights.IEffect;
+import main.java.com.kyleaheron.lights.EffectEnum;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
@@ -20,7 +19,6 @@ public class Lightning implements IEffect {
 
     public static final Random random = new Random();
 
-    public static PropertyKey<Integer> brightnessKey;
     public static PropertyKey<Color> colorKey;
 
     private int lightningMaxStrikes = 12;
@@ -30,7 +28,6 @@ public class Lightning implements IEffect {
     private long startTime = System.currentTimeMillis();
 
     public Lightning() {
-        brightnessKey = createPropertyWithSlider("Brightness", Integer.class, LightUtil.MIN_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS, LightUtil.MAX_BRIGHTNESS);
         colorKey = createPropertyWithColorChooser("Color", Color.class, Color.WHITE);
     }
 
@@ -41,7 +38,7 @@ public class Lightning implements IEffect {
                 for (int strike = 0; strike < random.nextInt(lightningMaxStrikes); strike++) {
                     getLight()
                             .setOn(true)
-                            .setBrightness(getProperty(brightnessKey))
+                            .setBrightness((int)(getProperty(colorKey).getBrightness()))
                             .setColor(getProperty(colorKey))
                             .setTransitionTime(0)
                             .show();

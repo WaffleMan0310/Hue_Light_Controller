@@ -1,11 +1,7 @@
-package com.kyleaheron.gui.components;
+package main.java.com.kyleaheron.gui.components;
 
-import com.kyleaheron.gui.GuiController;
-import com.kyleaheron.gui.IComponent;
-import javafx.beans.property.SimpleBooleanProperty;
+import main.java.com.kyleaheron.gui.GuiController;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
@@ -14,7 +10,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 

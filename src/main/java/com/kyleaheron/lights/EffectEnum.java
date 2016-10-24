@@ -1,6 +1,6 @@
-package com.kyleaheron.lights;
+package main.java.com.kyleaheron.lights;
 
-import com.kyleaheron.lights.effects.*;
+import main.java.com.kyleaheron.lights.effects.*;
 
 public enum EffectEnum {
     STATIC("Static", Static.class),

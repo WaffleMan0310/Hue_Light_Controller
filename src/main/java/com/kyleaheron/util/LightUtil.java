@@ -1,4 +1,4 @@
-package com.kyleaheron.util;
+package main.java.com.kyleaheron.util;
 
 public class LightUtil {
 

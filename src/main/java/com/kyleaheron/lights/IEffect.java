@@ -24,7 +24,6 @@ public interface IEffect {
     VBox getControlPane();
 
     void setEffect(EffectEnum effect);
-
     EffectEnum getEffect();
 
     default <T> void addProperty(PropertyKey<T> key, T defaultValue) {

@@ -13,6 +13,8 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 
+import java.lang.reflect.Method;
+
 public class ControllerButton extends Button{
 
     public enum State {

@@ -25,6 +25,7 @@ public class Flame implements IEffect {
     private long startTime = System.currentTimeMillis();
 
     public Flame() {
+
         turbulenceKey = createProperty("turbulence", Double.class, 0.5d);
         colorKey = createPropertyWithColorChooser("Color", Color.class, Color.RED);
     }

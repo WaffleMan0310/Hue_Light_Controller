@@ -5,30 +5,55 @@ import com.kyleaheron.HueLight;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Controller {
 
     static Logger logger = Logger.getLogger(Controller.class.getName());
 
+    private final int updateDelayMs = 100;
+
     private HueLight light;
 
     private List<IEffect> effects = new ArrayList<>();
 
     private volatile IEffect currentEffect;
-    private boolean shouldRun;
+    private volatile boolean shouldRun = true;
+    private volatile boolean on;
 
-    private Thread lightControlThread = new Thread(() -> {
+    private long lastTime;
+    private volatile Thread controllerThread = new Thread(() -> {
         while (shouldRun) {
-            if (getCurrentEffect() != null) {
-                getCurrentEffect().show();
+            if (isOn()) {
+                if (getCurrentEffect() != null) {
+                    getCurrentEffect().show();
+                }
+            } else {
+                if (getLight().isOn()) {
+                    System.out.println("Light turned off");
+                    getLight().setOn(false).show();
+                }
             }
+            try {
+                double changeInMs = ((double)(System.nanoTime() - lastTime)) / 1000000;
+                if (changeInMs < updateDelayMs) {
+                    int sleepDuration = (int)(updateDelayMs - ((double)(System.nanoTime() - lastTime) / 1000000));
+                    if (sleepDuration > 0) Thread.sleep(sleepDuration);
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            lastTime = System.nanoTime();
         }
     });
 
     public Controller(HueLight light) {
         this.light = light;
-        this.shouldRun = true;
+        this.on = true;
         Arrays.stream(EffectEnum.values()).forEach(effect -> {
             try {
                 IEffect effectInstance = effect.effectClass.newInstance();
@@ -40,7 +65,7 @@ public class Controller {
             }
         });
         setCurrentEffect(EffectEnum.STATIC);
-        lightControlThread.start();
+        controllerThread.start();
     }
 
     public void setLight(HueLight light) {
@@ -51,13 +76,33 @@ public class Controller {
         return light;
     }
 
-    public synchronized IEffect getCurrentEffect() {
+    public IEffect getCurrentEffect() {
         return currentEffect;
     }
 
-    public synchronized void setCurrentEffect(EffectEnum newEffect) {
+    public void setCurrentEffect(EffectEnum newEffect) {
         if (effects.stream().filter(effect -> effect.getEffect() == newEffect).findFirst().isPresent()) {
             this.currentEffect = effects.stream().filter(effect -> effect.getEffect() == newEffect).findFirst().get();
         }
+    }
+
+    public synchronized boolean isOn() {
+        return on;
+    }
+
+    public synchronized void setOn(boolean on) {
+        this.on = on;
+    }
+
+    public void shutDown() {
+        logger.log(Level.INFO, String.format("Controller for: %s shutting down...", getLight().getName()));
+        try {
+            shouldRun = false;
+            controllerThread.join();
+            getLight().setOn(false).show();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        //if (getLight().isOn()) getLight().setOn(false).show();
     }
 }

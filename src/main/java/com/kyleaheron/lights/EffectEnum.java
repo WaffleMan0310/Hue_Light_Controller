@@ -10,7 +10,7 @@ public enum EffectEnum {
     FLAME("Flame", Flame.class),
     LIGHTNING("Lightning", Lightning.class),
     VISUALIZER("Visualizer", Visualizer.class),
-    OFF("Off", Off.class);
+    CLOUDS("Clouds", Clouds.class);
 
     String effectName;
     Class<? extends IEffect> effectClass;

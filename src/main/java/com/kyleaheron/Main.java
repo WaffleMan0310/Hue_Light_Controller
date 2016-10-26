@@ -6,6 +6,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import main.java.com.kyleaheron.gui.components.ControllerButton;
+import main.java.com.kyleaheron.lights.Controller;
 
 import java.net.URL;
 
@@ -17,6 +19,7 @@ TODO: Make the application settings panel.
 TODO: Skins? Make use of.
 TODO: Static implementation of the the light object, or just the show, and output buffer to avoid sending too many commands.
 TODO: Implement the gui object container into all whom implement ieffect, test it out?
+TODO:
  */
 
 public class Main extends Application  {
@@ -28,12 +31,21 @@ public class Main extends Application  {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(GuiController.class.getResource("ControllerGui.fxml"));
+        FXMLLoader loader = new FXMLLoader(GuiController.class.getResource("ControllerGui.fxml"));
+        Parent root = loader.load();
         Scene scene = new Scene(root);
+        GuiController guiController = loader.getController();
+
+        primaryStage.setOnCloseRequest((we) -> {
+            guiController.getLightButtonPane().getChildren().forEach(node -> {
+                ControllerButton button = (ControllerButton) node;
+                Controller controller = (Controller) button.getTarget();
+                controller.shutDown();
+            });
+        });
 
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
         primaryStage.show();
-
     }
 }

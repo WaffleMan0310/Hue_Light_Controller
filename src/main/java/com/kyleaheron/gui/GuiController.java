@@ -75,7 +75,6 @@ public class GuiController implements Initializable{
 
         assert mainPane != null;
         mainPane.setBackground(background);
-        System.out.println(mainPane.getScene());
 
         assert getLightButtonPane() != null && getBridge() != null;
         getLightButtonPane().setAlignment(Pos.CENTER_LEFT);

@@ -10,6 +10,7 @@ public enum EffectEnum {
     FLAME("Flame", Flame.class),
     LIGHTNING("Lightning", Lightning.class),
     VISUALIZER("Visualizer", Visualizer.class),
+    AlT_VISUALIZER("Alt-Visualizer", AltVisualizer.class),
     CLOUDS("Clouds", Clouds.class);
 
     String effectName;

@@ -80,7 +80,7 @@ public class Visualizer implements IEffect {
                 } else {
                     getLight()
                             .setOn(true)
-                            .setBrightness(getProperty(brightnessKey))
+                            .setBrightness((int)(254 * getProperty(colorKey).getBrightness()))
                             .setColor(getProperty(colorKey))
                             .setTransitionTime(100)
                             .show();

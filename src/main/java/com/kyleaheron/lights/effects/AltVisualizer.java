@@ -5,9 +5,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import main.java.com.kyleaheron.lights.EffectEnum;
 import main.java.com.kyleaheron.lights.IEffect;
-import net.beadsproject.beads.analysis.featureextractors.FFT;
-import net.beadsproject.beads.analysis.featureextractors.Frequency;
-import net.beadsproject.beads.analysis.featureextractors.PowerSpectrum;
+import net.beadsproject.beads.analysis.featureextractors.*;
 import net.beadsproject.beads.analysis.segmenters.ShortFrameSegmenter;
 import net.beadsproject.beads.core.AudioContext;
 import net.beadsproject.beads.core.UGen;
@@ -20,11 +18,6 @@ public class AltVisualizer implements IEffect{
     private EffectEnum effect = EffectEnum.AlT_VISUALIZER;
     private HueLight light;
 
-    private static final int NUM_OF_FEATURES = 256;
-    private static final float FEATURE_FREQ_INT = (20000 - 20) / NUM_OF_FEATURES;
-    private static final int COLOR_FREQ_MAX = 380;
-    private static final int COLOR_FREQ_MIN = 780;
-
     private ConcurrentHashMap<PropertyKey<?>, Object> propertyMap = new ConcurrentHashMap<>();
     private VBox controlPane = new VBox();
 
@@ -34,55 +27,85 @@ public class AltVisualizer implements IEffect{
     private static ShortFrameSegmenter segmenter = new ShortFrameSegmenter(audioContext);
     private static FFT fft = new FFT();
     private static PowerSpectrum powerSpectrum = new PowerSpectrum();
+    private static SpectralCentroid centroid = new SpectralCentroid(audioContext.getSampleRate());
 
     public AltVisualizer() {
         masterGain.addInput(stereoInput);
         segmenter.addInput(stereoInput);
         segmenter.addListener(fft);
         fft.addListener(powerSpectrum);
+        powerSpectrum.addListener(centroid);
         audioContext.out.addDependent(segmenter);
     }
 
-
-    private int numOfSamples = 1;
-    private float minFreqAvg = 0, maxFreqAvg = 0, minFreqSum = 0, maxFreqSum = 0;
+    private float fMinAvg = 0, fMaxAvg = 0, fMinSum = 0, fMaxSum = 0;
+    private float pMinAvg = 0, pMaxAvg = 0, pMinSum = 0, pMaxSum = 0;
+    private int numOfSamples;
 
     @Override
     public void show() {
         if (!audioContext.isRunning()) audioContext.start();
-        float[] features = powerSpectrum.getFeatures();
+        float[][] features = fft.getFeatures();
         if (features != null) {
-            float min = 10;
-            float minFreq = 10;
-            float max = 0;
-            float maxFreq = 0;
-            for (int f = 0; f < features.length; f++) {
-                if (features[f] > max) {
-                    max = features[f];
-                    maxFreq = f * FEATURE_FREQ_INT;
+            for (float[] sample : features) {
+                int bin = 0;
+                float pMin = 0;
+                float pMax = 0;
+                float fMin = 0;
+                float fMax = 0;
+                if (sample != null && sample == features[0]) {
+                    for (float amplitude : sample) {
+                        float frequency = FFT.binFrequency(audioContext.getBufferSize(), 1024, bin);
+                        if (amplitude > pMax) {
+                            pMax = amplitude;
+                            fMax = frequency;
+                        } else if (amplitude < pMin && amplitude > 0.5) {
+                            pMin = amplitude;
+                            fMin = frequency;
+                        }
+                        bin++;
+                    }
+
+                    fMaxSum += fMax;
+                    fMinSum += fMin;
+                    fMaxAvg = fMaxSum / numOfSamples;
+                    fMinAvg = fMinSum / numOfSamples;
+
+                    pMaxSum += pMax;
+                    pMinSum += pMin;
+                    pMaxAvg = pMaxSum / numOfSamples;
+                    pMinAvg = pMinSum / numOfSamples;
+
+                    if (numOfSamples < 300) {
+                        numOfSamples++;
+                    } else {
+                        numOfSamples = 1;
+                    }
+
+                    //System.out.println(bin);
+
+                    //System.out.printf("Min: %f, Max: %f, Min Avg: %f, Max Avg: %f\n", pMin, pMax, pMinAvg, pMaxAvg);
+                    //System.out.printf("Min: %f, Max: %f, Min Avg: %f, Max Avg: %f\n", fMin, fMax, fMinAvg, fMaxAvg);
+                    float centroidFeatures = 0;
+                    if (centroid.getFeatures() > 0) {
+                        centroidFeatures = centroid.getFeatures();
+                    }
+
+                    double interval = (2 * Math.PI) / (fMinAvg - fMaxAvg) > 0 ? (fMinAvg - fMaxAvg) : (fMaxAvg - fMinAvg);
+                    Color color = Color.rgb(
+                            (int) (127 * Math.sin((interval * centroidFeatures)) + 127),
+                            (int) (127 * Math.sin((interval * centroidFeatures) + 2 * (Math.PI / 3))) + 127,
+                            (int) (127 * Math.sin((interval * centroidFeatures) + 4 * (Math.PI / 3))) + 127
+                    );
+
+                    //System.out.printf("Red: %f, Green: %f, Blue: %f\n", color.getRed(), color.getGreen(), color.getBlue());
+
+                    getLight()
+                            .setBrightness((int)(254 * (pMax / 50)) < 255 ? (int)(254 * (pMax / 50)) : 254)
+                            .setColor(color)
+                            .setTransitionTime(200)
+                            .show();
                 }
-                if (features[f] < min && features[f] > 1) {
-                    min = features[f];
-                    minFreq = f * FEATURE_FREQ_INT;
-                }
-            }
-
-            maxFreqSum += maxFreq;
-            minFreqSum += minFreq;
-            maxFreqAvg = maxFreqSum / numOfSamples;
-            minFreqAvg = minFreqSum / numOfSamples;
-            numOfSamples++;
-
-            System.out.printf("Max: %f, Min: %f, Avg Max: %f, Avg Min: %f, Color: %f\n", maxFreq, minFreq, maxFreqAvg, minFreqAvg, audioToColor(maxFreq));
-
-            int[] rgbValues = waveLengthToRGB(audioToColor(maxFreq));
-            if (rgbValues[0] != 0 || rgbValues[1] != 0 || rgbValues[2] != 0) {
-                getLight()
-                        .setOn(true)
-                        .setBrightness(((int)(254 * (max / 10000))) < 255 ? ((int)(254 * (max / 10000))) : 254)
-                        .setColor(Color.rgb(rgbValues[0], rgbValues[1], rgbValues[2]))
-                        .setTransitionTime(200)
-                        .show();
             }
         }
     }
@@ -115,73 +138,5 @@ public class AltVisualizer implements IEffect{
     @Override
     public EffectEnum getEffect() {
         return effect;
-    }
-
-    private double audioToColor(double freq) {
-        return ((((COLOR_FREQ_MAX - COLOR_FREQ_MIN) * (freq - minFreqAvg)) / (maxFreqAvg - minFreqAvg))) + COLOR_FREQ_MIN;
-    }
-
-    static private double Gamma = 0.80;
-    static private double IntensityMax = 255;
-
-    /** Taken from Earl F. Glynn's web page:
-     * <a href="http://www.efg2.com/Lab/ScienceAndEngineering/Spectra.htm">Spectra Lab Report</a>
-     * */
-    public static int[] waveLengthToRGB(double Wavelength){
-
-        double factor;
-        double Red,Green,Blue;
-
-        if((Wavelength >= 380) && (Wavelength<440)){
-            Red = -(Wavelength - 440) / (440 - 380);
-            Green = 0.0;
-            Blue = 1.0;
-        }else if((Wavelength >= 440) && (Wavelength<490)){
-            Red = 0.0;
-            Green = (Wavelength - 440) / (490 - 440);
-            Blue = 1.0;
-        }else if((Wavelength >= 490) && (Wavelength<510)){
-            Red = 0.0;
-            Green = 1.0;
-            Blue = -(Wavelength - 510) / (510 - 490);
-        }else if((Wavelength >= 510) && (Wavelength<580)){
-            Red = (Wavelength - 510) / (580 - 510);
-            Green = 1.0;
-            Blue = 0.0;
-        }else if((Wavelength >= 580) && (Wavelength<645)){
-            Red = 1.0;
-            Green = -(Wavelength - 645) / (645 - 580);
-            Blue = 0.0;
-        }else if((Wavelength >= 645) && (Wavelength<781)){
-            Red = 1.0;
-            Green = 0.0;
-            Blue = 0.0;
-        }else{
-            Red = 0.0;
-            Green = 0.0;
-            Blue = 0.0;
-        }
-
-        // Let the intensity fall off near the vision limits
-
-        if((Wavelength >= 380) && (Wavelength<420)){
-            factor = 0.3 + 0.7*(Wavelength - 380) / (420 - 380);
-        }else if((Wavelength >= 420) && (Wavelength<701)){
-            factor = 1.0;
-        }else if((Wavelength >= 701) && (Wavelength<781)){
-            factor = 0.3 + 0.7*(780 - Wavelength) / (780 - 700);
-        }else{
-            factor = 0.0;
-        };
-
-
-        int[] rgb = new int[3];
-
-        // Don't want 0^x = 1 for x <> 0
-        rgb[0] = Red==0.0 ? 0 : (int) Math.round(IntensityMax * Math.pow(Red * factor, Gamma));
-        rgb[1] = Green==0.0 ? 0 : (int) Math.round(IntensityMax * Math.pow(Green * factor, Gamma));
-        rgb[2] = Blue==0.0 ? 0 : (int) Math.round(IntensityMax * Math.pow(Blue * factor, Gamma));
-
-        return rgb;
     }
 }
